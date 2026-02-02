@@ -1,0 +1,2902 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.6/css/responsive.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.5/css/fixedColumns.bootstrap5.min.css" />
+    
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 14px;
+        }
+
+        /* Phần tiêu đề */
+        .header-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            gap: 15px;
+        }
+
+        .company-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .logo-section {
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+            .logo-section img {
+                max-width: 120px;
+                height: auto;
+                object-fit: contain;
+            }
+
+        .document-code {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            display: flex;
+                flex-direction: column;
+            gap: 3px;
+        }
+
+        .document-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            margin: 15px 0;
+            color: var(--primary-color);
+            padding: 12px;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef, #f8f9fa);
+            border-radius: 6px;
+            border-left: 5px solid var(--secondary-color);
+            border-right: 5px solid var(--secondary-color);
+            line-height: 1.4;
+        }
+
+        .title-section {
+            text-align: left;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+            .title-section p {
+                margin: 8px 0;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .title-section input {
+                padding: 6px 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-family: "Times New Roman", serif;
+                width: 70px;
+                text-align: center;
+                font-size: 14px;
+            }
+
+        /* Khung biểu mẫu */
+        .form-container {
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e0e0e0;
+            align-items: flex-start;
+        }
+
+            .form-row:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+        .field-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            flex: 0 0 180px;
+            padding-right: 10px;
+            padding-top: 8px;
+            font-size: 14px;
+            display: flex;
+                align-items: center;
+            gap: 8px;
+        }
+
+        .field-value {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            font-family: "Times New Roman", serif;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+            .form-input:focus {
+                border-color: var(--secondary-color);
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            }
+
+        /* Khung chứa bảng chính */
+        .main-table-container {
+            margin: 15px 0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Định dạng bảng với độ rộng cột tối ưu cho mobile */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1800px;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 16px 12px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+            line-height: 1.3;
+            min-width: 100px;
+        }
+
+        /* Độ rộng các cột */
+        th:nth-child(1), td:nth-child(1) {
+            width: 50px;
+            min-width: 50px;
+        }
+        /* Thao tác */
+        th:nth-child(2), td:nth-child(2) {
+            width: 80px;
+            min-width: 80px;
+        }
+        /* STT */
+        th:nth-child(3), td:nth-child(3) {
+            width: 120px;
+            min-width: 120px;
+        }
+        /* MSNV */
+        th:nth-child(4), td:nth-child(4) {
+            width: 200px;
+            min-width: 200px;
+        }
+        /* Họ và tên */
+        th:nth-child(5), td:nth-child(5) {
+            width: 150px;
+            min-width: 150px;
+        }
+        /* Chức danh */
+        th:nth-child(6), td:nth-child(6) {
+            width: 200px;
+            min-width: 200px;
+        }
+        /* Công việc */
+        th:nth-child(7), td:nth-child(7) {
+            width: 120px;
+            min-width: 120px;
+        }
+        /* Sản lượng */
+        /* Các cột thời gian - CHIỀU RỘNG CỐ ĐỊNH */
+        th:nth-child(8), td:nth-child(8) {
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+            overflow: visible !important;
+        }
+        /* Từ (ĐK) */
+        th:nth-child(9), td:nth-child(9) {
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+            overflow: visible !important;
+        }
+        /* Đến (ĐK) */
+        th:nth-child(10), td:nth-child(10) {
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+            overflow: visible !important;
+        }
+        /* Từ (TT) */
+        th:nth-child(11), td:nth-child(11) {
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+            overflow: visible !important;
+        }
+        /* Đến (TT) */
+        th:nth-child(12), td:nth-child(12) {
+            width: 200px;
+            min-width: 200px;
+        }
+        /* Công việc TT */
+        th:nth-child(13), td:nth-child(13) {
+            width: 200px;
+            min-width: 200px;
+        }
+        /* Ghi chú */
+
+        td {
+            padding: 14px 12px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+            text-align: center;
+            box-sizing: border-box;
+            position: relative;
+            overflow: visible !important;
+        }
+
+        /* Sửa cho các ô chứa input time */
+        td:nth-child(8), td:nth-child(9),
+        td:nth-child(10), td:nth-child(11) {
+            padding: 8px 6px !important;
+            overflow: visible !important;
+        }
+
+        /* ĐỊNH DẠNG HÀNG NGÀY */
+        .day-row {
+            background-color: #e8f4fd !important;
+            font-weight: bold;
+            color: var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+            .day-row td {
+                padding: 12px 16px !important;
+                border-bottom: 3px solid var(--secondary-color);
+                text-align: left;
+            }
+
+        /* Ô ngày - Layout dọc với nút ở dưới - ĐÃ THAY ĐỔI */
+        .day-cell {
+            width: 320px;
+            max-width: 320px;
+            margin: 0 auto 0 0;
+            width: 320px;
+            flex-direction: column;
+            gap: 8px;
+            display: block;
+        }
+
+        .day-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+            .day-info span {
+                white-space: nowrap;
+                font-weight: bold;
+                color: var(--primary-color);
+                font-size: 14px;
+            }
+
+        /* INPUT NGÀY NHỎ LẠI - ĐÃ THAY ĐỔI */
+        .day-input[type="date"] {
+            width: 100px !important;
+            padding: 5px 6px !important;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: "Times New Roman", serif;
+            text-align: center;
+            font-size: 13px;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .day-actions {
+            margin-top: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        /* Nút thu/phóng ngày */
+        .btn-toggle-day {
+            padding: 6px 12px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+                align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+            .btn-toggle-day:hover {
+                background-color: #5a6268;
+                transform: translateY(-1px);
+            }
+
+        /* Ẩn nhân viên khi thu gọn */
+        .day-collapsed {
+            opacity: 0.6;
+        }
+
+        .day-collapsed + .employee-row {
+            display: none;
+        }
+
+        /* Phần Import Excel */
+        .excel-import-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--info-color);
+        }
+
+        .excel-import-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+            .excel-import-box label {
+                font-weight: bold;
+                color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-shrink: 0;
+            }
+
+            .excel-import-box input[type="file"] {
+                flex: 1;
+                min-width: 200px;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                font-family: "Times New Roman", serif;
+                background: white;
+            }
+
+            .excel-import-box button {
+                padding: 10px 20px;
+                background-color: var(--info-color);
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.3s;
+            }
+
+                .excel-import-box button:hover {
+                    background-color: #138496;
+                }
+
+        /* Cài đặt import */
+        .import-settings {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .setting-item label {
+                font-size: 14px;
+                color: var(--primary-color);
+            }
+
+            .setting-item input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* Thông tin mapping */
+        .mapping-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e8f4fd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+            .mapping-info h4 {
+                margin-top: 0;
+                color: var(--primary-color);
+            }
+
+            .mapping-info ul {
+                margin: 5px 0;
+                padding-left: 20px;
+            }
+
+            .mapping-info li {
+                margin-bottom: 3px;
+            }
+
+        /* Ô tìm kiếm */
+        .search-container {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .search-box label {
+                font-weight: bold;
+                color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-shrink: 0;
+            }
+
+            .search-box input {
+                flex: 1;
+                min-width: 200px;
+                padding: 10px 15px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                font-family: "Times New Roman", serif;
+            }
+
+                .search-box input:focus {
+                    border-color: var(--secondary-color);
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+                }
+
+        /* Highlight kết quả tìm kiếm */
+        .highlight-row {
+            background-color: #fff3cd !important;
+            animation: highlightFade 2s ease-in-out;
+        }
+
+        @keyframes highlightFade {
+            0% {
+                background-color: #ffc107;
+            }
+            100% {
+                background-color: #fff3cd;
+            }
+        }
+
+        /* Định dạng hàng nhân viên */
+        .employee-row {
+            transition: background-color 0.2s;
+            background-color: white;
+        }
+
+            .employee-row:hover {
+                background-color: #f9f9f9;
+            }
+
+        .table-action-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--danger-color);
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+                align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+
+            .table-action-btn:hover {
+                background-color: #c82333;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+        .btn-add {
+            padding: 8px 16px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+                align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+            .btn-add:hover {
+                background-color: #218838;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+        .btn-add-day {
+            padding: 14px 28px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            display: inline-flex;
+                align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+
+            .btn-add-day:hover {
+                background-color: #2980b9;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        .scroll-indicator {
+            text-align: center;
+            padding: 12px;
+            background: #f0f7ff;
+            color: var(--secondary-color);
+            font-size: 13px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: flex;
+                align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px dashed var(--secondary-color);
+        }
+
+        /* SỬA LỖI INPUT TIME */
+        input[type="time"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
+            padding: 8px 4px !important;
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            font-family: "Times New Roman", serif;
+            font-size: 13px !important;
+            text-align: center;
+            background: white;
+            height: 38px !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* Sửa riêng cho input time trong bảng */
+        table input[type="time"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            padding: 8px 3px !important;
+            font-size: 12px !important;
+            height: 36px !important;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Reset input time mặc định của trình duyệt */
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            cursor: pointer;
+            height: 20px;
+            width: 20px;
+            padding: 0;
+            margin: 0;
+            opacity: 0.7;
+        }
+
+        input[type="time"]::-webkit-inner-spin-button,
+        input[type="time"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"] {
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        table input[type="date"] {
+            padding: 8px !important;
+            border: 1px solid #e0e0e0 !important;
+            border-radius: 4px !important;
+            font-size: 13px !important;
+            box-sizing: border-box !important;
+            background: white;
+            font-family: "Times New Roman", serif;
+            height: 38px;
+            max-width: 100% !important;
+        }
+
+        /* Định dạng input trong bảng */
+        table input[type="text"],
+        table input[type="number"] {
+            width: 100% !important;
+            padding: 8px !important;
+            border: 1px solid #e0e0e0 !important;
+            border-radius: 4px !important;
+            font-size: 13px !important;
+            box-sizing: border-box !important;
+            background: white;
+            font-family: "Times New Roman", serif;
+            height: 38px;
+            max-width: 100% !important;
+        }
+
+        table input:focus {
+            border-color: var(--secondary-color) !important;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Wrapper cho time input */
+        .time-input-wrapper {
+            width: 100%;
+            position: relative;
+            overflow: visible !important;
+        }
+
+        /* Nhóm nút */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-family: "Times New Roman", serif;
+            display: inline-flex;
+                align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            min-width: 160px;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .btn-reset {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+            .btn-reset:hover {
+                background-color: #e67e22;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        /* MODAL FORM NHẬP NHÂN VIÊN */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+
+        .modal-header {
+            padding: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .modal-header h2 {
+                margin: 0;
+                font-size: 20px;
+            }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+                align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+            .close:hover,
+            .close:focus {
+                background-color: rgba(255,255,255,0.2);
+            }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-form-group {
+            margin-bottom: 20px;
+        }
+
+            .modal-form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: bold;
+                color: var(--primary-color);
+                font-size: 14px;
+            }
+
+                .modal-form-group label .required {
+                    color: var(--danger-color);
+                    margin-left: 3px;
+                }
+
+            .modal-form-group input,
+            .modal-form-group textarea {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                font-family: "Times New Roman", serif;
+                box-sizing: border-box;
+                transition: all 0.3s;
+            }
+
+                .modal-form-group input:focus,
+                .modal-form-group textarea:focus {
+                    border-color: var(--secondary-color);
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+                }
+
+                .modal-form-group input.error,
+                .modal-form-group textarea.error {
+                    border-color: var(--danger-color);
+                }
+
+            .modal-form-group .error-message {
+                color: var(--danger-color);
+                font-size: 12px;
+                margin-top: 5px;
+                display: none;
+            }
+
+            .modal-form-group input.error + .error-message,
+            .modal-form-group textarea.error + .error-message {
+                display: block;
+            }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: "Times New Roman", serif;
+            transition: all 0.3s;
+            display: inline-flex;
+                align-items: center;
+            gap: 6px;
+        }
+
+        .modal-btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+
+            .modal-btn-cancel:hover {
+                background-color: #5a6268;
+            }
+
+        .modal-btn-submit {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+            .modal-btn-submit:hover {
+                background-color: #218838;
+            }
+
+        /* Hiệu ứng */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Thông báo */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+            display: flex;
+                align-items: center;
+            gap: 10px;
+        }
+
+        .notification-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .notification-error {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .notification-info {
+            background: var(--info-color);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Phần mapping cột */
+        .column-mapping-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .mapping-table th,
+        .mapping-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .mapping-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .mapping-table select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .preview-section {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 6px;
+            border: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        .preview-table th {
+            background-color: #f0f7ff;
+            position: sticky;
+            top: 0;
+        }
+
+        /* Responsive - Mobile First */
+        @media (max-width: 767px) {
+            body {
+                font-size: 13px;
+            }
+
+            .document-title {
+                font-size: 16px;
+                padding: 10px;
+                margin: 10px 0;
+            }
+
+            .header-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 10px;
+                padding-bottom: 10px;
+            }
+
+            .logo-section {
+                order: -1;
+                margin-bottom: 10px;
+            }
+
+                .logo-section img {
+                    max-width: 100px;
+                }
+
+            .title-section {
+                padding: 8px;
+                margin-bottom: 10px;
+            }
+
+                .title-section p {
+                    margin: 6px 0;
+                }
+
+                .title-section input {
+                    width: 60px;
+                    padding: 5px 6px;
+                    font-size: 13px;
+                }
+
+            .form-container {
+                padding: 12px;
+                margin: 10px 0;
+            }
+
+            .form-row {
+                flex-direction: column;
+                margin-bottom: 10px;
+                padding-bottom: 10px;
+            }
+
+            .field-label {
+                flex: 0 0 100%;
+                margin-bottom: 5px;
+                padding: 0;
+                font-size: 13px;
+            }
+
+            .field-value {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .form-input {
+                padding: 9px 10px;
+                font-size: 13px;
+            }
+
+            table {
+                min-width: 2000px;
+            }
+
+            th, td {
+                padding: 12px 10px !important;
+                font-size: 12px;
+            }
+
+            th {
+                font-size: 12px;
+                padding: 14px 10px !important;
+            }
+
+            .day-row td {
+                padding: 10px !important;
+            }
+
+            /* INPUT NGÀY NHỎ HƠN TRÊN MOBILE */
+            .day-input[type="date"] {
+                width: 90px !important;
+                font-size: 12px;
+                padding: 4px 5px !important;
+            }
+
+            .btn-toggle-day {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
+
+            .excel-import-section,
+            .search-container {
+                padding: 10px;
+            }
+
+            .excel-import-box,
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+                .excel-import-box label,
+                .search-box label {
+                    margin-bottom: 5px;
+                }
+
+                .excel-import-box input[type="file"],
+                .search-box input {
+                    min-width: 100%;
+                    margin-bottom: 8px;
+                }
+
+            .import-settings {
+                padding: 10px;
+            }
+
+            .setting-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .day-actions {
+                gap: 6px;
+            }
+
+            /* ẨN TEXT CHO NÚT XÓA TRONG BẢNG TRÊN MOBILE */
+            .table-action-btn .btn-text {
+                display: none;
+            }
+
+            .table-action-btn {
+                min-width: 40px;
+                padding: 8px;
+            }
+
+            .btn-add {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+                .btn-add .btn-text {
+                    display: none;
+                }
+
+            .btn-add-day {
+                padding: 12px 20px;
+                font-size: 14px;
+                max-width: 100%;
+            }
+
+            .scroll-indicator {
+                padding: 10px;
+                font-size: 12px;
+                margin: 8px 0;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 20px;
+                padding-top: 15px;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 100%;
+                padding: 12px 20px;
+                font-size: 14px;
+                min-width: auto;
+            }
+
+            /* Sửa input time trên mobile */
+            table input[type="time"] {
+                padding: 6px 2px !important;
+                font-size: 11px !important;
+                height: 34px !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
+
+            /* Điều chỉnh width cho các cột time */
+            th:nth-child(8), td:nth-child(8),
+            th:nth-child(9), td:nth-child(9),
+            th:nth-child(10), td:nth-child(10),
+            th:nth-child(11), td:nth-child(11) {
+                width: 110px !important;
+                min-width: 110px !important;
+                max-width: 110px !important;
+                padding: 6px 4px !important;
+            }
+
+            table input[type="text"],
+            table input[type="number"],
+            table input[type="date"] {
+                padding: 7px !important;
+                font-size: 12px !important;
+                height: 36px;
+            }
+
+            /* Modal responsive */
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .modal-header h2 {
+                font-size: 18px;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
+        /* Cho tablet */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            table {
+                min-width: 1600px;
+            }
+
+            .scroll-indicator {
+                display: flex;
+            }
+            
+            /* HIỂN THỊ TEXT TRÊN TABLET */
+            .table-action-btn .btn-text {
+                display: inline;
+            }
+
+            .btn-add .btn-text {
+                display: inline;
+            }
+        }
+
+        /* Cho desktop */
+        @media (min-width: 1025px) {
+            .scroll-indicator {
+                display: none;
+            }
+            
+            /* HIỂN THỊ TEXT TRÊN DESKTOP */
+            .table-action-btn .btn-text {
+                display: inline;
+            }
+
+            .btn-add .btn-text {
+                display: inline;
+            }
+        }
+
+        /* Styles cho in ấn */
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+                font-size: 12px;
+                margin: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 5mm;
+                margin: 0;
+                border-radius: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .button-group,
+            .table-action-btn,
+            .btn-add,
+            .btn-add-day,
+            .scroll-indicator,
+            .day-actions,
+            .modal,
+            .search-container,
+            .excel-import-section {
+                display: none !important;
+            }
+
+            .form-container {
+                border: 1px solid #000;
+                page-break-inside: avoid;
+            }
+
+            .btn {
+                display: none;
+            }
+
+            table {
+                min-width: 100%;
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 8px 6px;
+                border: 1px solid #000;
+            }
+
+            .day-row {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            input, .day-input {
+                border: 1px solid #000 !important;
+                background: transparent !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            input[type="time"] {
+                border: 1px solid #000 !important;
+                background: transparent !important;
+            }
+        }
+
+        /* Tùy chỉnh Flatpickr */
+        .flatpickr-calendar {
+            font-family: "Times New Roman", serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="applicationForm">
+        <!-- Tiêu đề -->
+        <div class="header-section">
+            <div class="company-info">
+                <div class="document-code">
+                    <div>Số hiệu BM: 025/BM.25/NSIP – HCNS</div>
+                </div>
+            </div>
+            <div class="logo-section">
+                @{
+                    string Path = "~/wwwroot/Images/logo.png";
+                }
+                <img src="@Url.Content(Path)" alt="Company Logo">
+            </div>
+        </div>
+
+        <!-- Tiêu đề tài liệu -->
+        <div class="document-title">
+            <p>Bảng đăng ký, xác nhận làm ngoài giờ quy định</p>
+        </div>
+
+        <div class="title-section">
+            <p>Số: <input type="text" class="form-input" style="width:70px; display: inline;" />/NSIP-KDTV</p>
+            <p>Tháng: <input type="text" id="monthYearPicker" class="form-input" style="width: 150px; display: inline;" placeholder="Chọn tháng/năm" /></p>
+        </div>
+
+        <!-- Khung biểu mẫu 1: Thông tin người lập -->
+        <div class="form-container">
+            <div class="form-row">
+                <div class="field-label">
+                    <i class="fas fa-user" style="color: #3498db;"></i> Người lập phiếu:
+                </div>
+                <div class="field-value">
+                    <input type="text" class="form-input" placeholder="Nhập họ và tên" id="requesterName">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field-label">
+                    <i class="fas fa-id-card" style="color: #3498db;"></i> Mã số NV:
+                </div>
+                <div class="field-value">
+                    <input type="text" class="form-input" placeholder="Nhập mã nhân viên" id="employeeCode">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field-label">
+                    <i class="fas fa-briefcase" style="color: #3498db;"></i> Chức vụ:
+                </div>
+                <div class="field-value">
+                    <input type="text" class="form-input" placeholder="Nhập chức vụ" id="position">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field-label">
+                    <i class="fas fa-building" style="color: #3498db;"></i> Đơn vị:
+                </div>
+                <div class="field-value">
+                    <input type="text" class="form-input" placeholder="Nhập đơn vị" id="department">
+                </div>
+            </div>
+        </div>
+
+        <!-- Khung chứa bảng chính -->
+        <div class="main-table-container">
+            <!-- Phần Import Excel -->
+            <div class="excel-import-section">
+                <div class="excel-import-box">
+                    <label>
+                        <i class="fas fa-file-excel" style="color: #17a2b8;"></i> Import từ Excel:
+                    </label>
+                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
+                    <button type="button" onclick="importExcelFile()">
+                        <i class="fas fa-upload"></i> Upload Excel
+                    </button>
+                </div>
+                
+                <!-- Cài đặt import -->
+                <div class="import-settings">
+                    <div class="setting-group">
+                        <div class="setting-item">
+                            <input type="checkbox" id="hasHeader" checked>
+                            <label for="hasHeader">File có hàng tiêu đề</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Phần mapping cột (Ẩn đi vì không dùng nữa) -->
+                    <div id="columnMappingSection" class="column-mapping-section" style="display: none;">
+                        <h4><i class="fas fa-columns"></i> Cài đặt mapping cột</h4>
+                        <div id="mappingContainer"></div>
+                        <div class="preview-section">
+                            <h5><i class="fas fa-eye"></i> Xem trước dữ liệu (5 dòng đầu)</h5>
+                            <div id="dataPreview"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mapping-info">
+                        <h4><i class="fas fa-info-circle"></i> Cấu trúc file Excel (bắt buộc):</h4>
+                        <p><strong>Lưu ý:</strong> File Excel phải 12 cột đúng theo thứ tự sau:</p>
+                        <ul>
+                            <li><strong>Cột 1:</strong> MSNV (Mã số nhân viên)</li>
+                            <li><strong>Cột 2:</strong> Họ và tên</li>
+                            <li><strong>Cột 3:</strong> Chức danh</li>
+                            <li><strong>Cột 4:</strong> Công việc đăng ký</li>
+                            <li><strong>Cột 5:</strong> Sản lượng</li>
+                            <li><strong>Cột 6:</strong> Từ (ĐK) - HH:mm</li>
+                            <li><strong>Cột 7:</strong> Đến (ĐK) - HH:mm</li>
+                            <li><strong>Cột 8:</strong> Từ (TT) - HH:mm</li>
+                            <li><strong>Cột 9:</strong> Đến (TT) - HH:mm</li>
+                            <li><strong>Cột 10:</strong> Công việc thực tế</li>
+                            <li><strong>Cột 11:</strong> Ghi chú</li>
+                            <li><strong>Cột 12:</strong> Ngày làm việc</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ô tìm kiếm -->
+            <div class="search-container">
+                <div class="search-box">
+                    <label>
+                        <i class="fas fa-search" style="color: #3498db;"></i> Tìm kiếm:
+                    </label>
+                    <input type="text" id="searchInput" placeholder="Nhập MSNV, họ tên, chức danh, công việc..." onkeyup="searchTable()">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="mainTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Thao tác</th>
+                            <th rowspan="2">Stt</th>
+                            <th rowspan="2">MSNV</th>
+                            <th rowspan="2">Họ và tên</th>
+                            <th rowspan="2">Chức danh</th>
+                            <th colspan="2">Công việc|khối lượng đăng ký thực hiện</th>
+                            <th colspan="2">Thời gian đăng ký</th>
+                            <th colspan="2">Xác nhận thời gian thực tế</th>
+                            <th rowspan="2">Công việc|Khối lượng thực tế</th>
+                            <th rowspan="2">Ghi chú</th>
+                        </tr>
+                        <tr>
+                            <th>Công việc</th>
+                            <th>Sản lượng</th>
+                            <th>Từ</th>
+                            <th>Đến</th>
+                            <th>Từ</th>
+                            <th>Đến</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Các ngày và nhân viên sẽ được thêm vào đây động -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Nút thêm ngày -->
+            <button type="button" class="btn-add-day" onclick="addDay()" style="display: block; margin: 20px auto;">
+                <i class="fas fa-plus"></i> Thêm ngày làm việc
+            </button>
+        </div>
+
+        <!-- Các nút hành động -->
+        <div class="button-group">
+            <button type="button" class="btn btn-reset" onclick="resetForm()">
+                <i class="fas fa-redo-alt"></i> Làm lại
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL FORM NHẬP NHÂN VIÊN -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Thêm nhân viên</h2>
+                <button class="close" onclick="closeEmployeeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm">
+                    <div class="modal-form-group">
+                        <label>Mã số nhân viên <span class="required">*</span></label>
+                        <input type="text" id="modal_empCode" name="empCode" placeholder="Nhập mã số nhân viên">
+                        <div class="error-message">Vui lòng nhập mã số nhân viên</div>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Họ và tên <span class="required">*</span></label>
+                        <input type="text" id="modal_fullName" name="fullName" placeholder="Nhập họ và tên">
+                        <div class="error-message">Vui lòng nhập họ và tên</div>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Chức danh <span class="required">*</span></label>
+                        <input type="text" id="modal_jobTitle" name="jobTitle" placeholder="Nhập chức danh">
+                        <div class="error-message">Vui lòng nhập chức danh</div>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Công việc <span class="required">*</span></label>
+                        <input type="text" id="modal_task" name="task" placeholder="Nhập công việc">
+                        <div class="error-message">Vui lòng nhập công việc</div>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Sản lượng</label>
+                        <input type="text" id="modal_quantity" name="quantity" placeholder="Nhập sản lượng">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Thời gian bắt đầu (Đăng ký)</label>
+                        <input type="time" id="modal_planStartTime" name="planStartTime" class="flatpickr-time">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Thời gian kết thúc (Đăng ký)</label>
+                        <input type="time" id="modal_planEndTime" name="planEndTime" class="flatpickr-time">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Thời gian bắt đầu (Thực tế)</label>
+                        <input type="time" id="modal_actualStartTime" name="actualStartTime" class="flatpickr-time">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Thời gian kết thúc (Thực tế)</label>
+                        <input type="time" id="modal_actualEndTime" name="actualEndTime" class="flatpickr-time">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Công việc thực tế</label>
+                        <input type="text" id="modal_actualTask" name="actualTask" placeholder="Nhập công việc thực tế">
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="modal_note" name="note" rows="3" placeholder="Nhập ghi chú"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeEmployeeModal()">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button type="button" class="modal-btn modal-btn-submit" onclick="submitEmployeeForm()">
+                    <i class="fas fa-check"></i> Thêm nhân viên
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SheetJS (xlsx) để đọc file Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- jQuery (cần thiết cho DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap JS (nếu cần) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.6/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.6/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/5.0.5/js/dataTables.fixedColumns.min.js"></script>
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+
+    <script>
+    // Biến toàn cục
+    let dayCounter = 0;
+    let employeeCounter = {};
+    let currentDayId = null;
+    let dayMap = new Map();
+
+    // ====================================================
+    // HÀM XỬ LÝ NGÀY THÁNG - LUÔN LẤY TỪ CỘT 12
+    // ====================================================
+
+    // Hàm format Excel date
+    function formatExcelDate(dateValue) {
+    if (!dateValue) {
+        console.log('DEBUG: dateValue is null/empty');
+        return null;
+    }
+    
+    console.log('DEBUG formatExcelDate - Input:', dateValue, 'Type:', typeof dateValue);
+    
+    // 1. NẾU LÀ STRING - XỬ LÝ TRỰC TIẾP (KHÔNG DÙNG Date object)
+    if (typeof dateValue === 'string') {
+        const str = dateValue.toString().trim();
+        console.log('DEBUG: Processing as string:', str);
+        
+        // TH1: dd/mm/yyyy
+        if (str.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+            const parts = str.split('/');
+            let day = parts[0];
+            let month = parts[1];
+            const year = parts[2];
+            
+            // KIỂM TRA ĐỊNH DẠNG MỸ (mm/dd/yyyy)
+            // Nếu phần 1 > 12 và phần 2 <= 12 → phần 1 là ngày, phần 2 là tháng
+            if (parseInt(day) > 12 && parseInt(month) <= 12) {
+                // Đổi chỗ: thực ra đây là mm/dd/yyyy (Mỹ)
+                // day = phần 1 (thực ra là tháng)
+                // month = phần 2 (thực ra là ngày)
+                [day, month] = [month, day]; // Hoán đổi
+            }
+            // Nếu phần 2 > 12 và phần 1 <= 12 → phần 1 là tháng, phần 2 là ngày
+            else if (parseInt(month) > 12 && parseInt(day) <= 12) {
+                // Đây là định dạng Mỹ, giữ nguyên
+                // day = phần 1 (tháng)
+                // month = phần 2 (ngày)
+                // KHÔNG đổi chỗ vì đã đúng
+            }
+            
+            console.log(`DEBUG: dd/mm/yyyy detected -> ${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
+        
+        // TH2: dd-mm-yyyy
+        if (str.match(/^\d{1,2}-\d{1,2}-\d{4}$/)) {
+            const parts = str.split('-');
+            let day = parts[0];
+            let month = parts[1];
+            const year = parts[2];
+            
+            // Kiểm tra định dạng Mỹ
+            if (parseInt(day) > 12 && parseInt(month) <= 12) {
+                [day, month] = [month, day];
+            }
+            else if (parseInt(month) > 12 && parseInt(day) <= 12) {
+                // Giữ nguyên
+            }
+            
+            console.log(`DEBUG: dd-mm-yyyy detected -> ${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
+        
+        // TH3: yyyy-mm-dd (giữ nguyên)
+        if (str.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+            console.log(`DEBUG: yyyy-mm-dd detected -> ${str}`);
+            return str;
+        }
+        
+        // TH4: Có dấu chấm .
+        if (str.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/)) {
+            const parts = str.split('.');
+            let day = parts[0];
+            let month = parts[1];
+            const year = parts[2];
+            
+            if (parseInt(day) > 12 && parseInt(month) <= 12) {
+                [day, month] = [month, day];
+            }
+            else if (parseInt(month) > 12 && parseInt(day) <= 12) {
+                // Giữ nguyên
+            }
+            
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
+        
+        console.log('DEBUG: String format not recognized');
+        return null;
+    }
+    
+    // 2. NẾU LÀ SỐ (Excel serial) - SỬ DỤNG CÔNG THỨC TRỰC TIẾP
+    if (!isNaN(dateValue) && !isNaN(parseFloat(dateValue))) {
+        const num = parseFloat(dateValue);
+        console.log('DEBUG: Processing as number (Excel serial):', num);
+        
+        // Excel serial date (1 = 01/01/1900)
+        if (num >= 1 && num < 100000) {
+            // CÔNG THỨC ĐƠN GIẢN KHÔNG DÙNG Date OBJECT
+            // Excel epoch: 30/12/1899
+            // Mỗi ngày = 1
+            
+            // Điều chỉnh bug Excel năm 1900 (coi 1900 là năm nhuận)
+            let adjustedNum = num;
+            if (num >= 60) {
+                adjustedNum = num - 1; // Trừ 1 ngày cho bug năm 1900
+            }
+            
+            // Tính ngày từ 30/12/1899
+            const baseDays = Math.floor(adjustedNum);
+            const fraction = adjustedNum - baseDays;
+            
+            // Tạo date từ 1899-12-30
+            const date = new Date(1899, 11, 30); // 30/12/1899
+            
+            // Thêm số ngày (KHÔNG dùng timezone)
+            // Dùng UTC để tránh timezone issues
+            const utcDate = new Date(Date.UTC(
+                1899, 11, 30 + baseDays, 
+                12, 0, 0, 0 // Luôn dùng 12:00 UTC
+            ));
+            
+            // Điều chỉnh thêm nếu cần
+            if (num >= 60) {
+                utcDate.setUTCDate(utcDate.getUTCDate() - 1);
+            }
+            
+            const utcYear = utcDate.getUTCFullYear();
+            const utcMonth = (utcDate.getUTCMonth() + 1).toString().padStart(2, '0');
+            const utcDay = utcDate.getUTCDate().toString().padStart(2, '0');
+            
+            console.log(`DEBUG: Excel serial ${num} -> ${utcYear}-${utcMonth}-${utcDay}`);
+            return `${utcYear}-${utcMonth}-${utcDay}`;
+        }
+    }
+    
+    // 3. NẾU LÀ Date OBJECT - THÊM 1 NGÀY ĐỂ BÙ TIMEZONE
+    if (dateValue instanceof Date && !isNaN(dateValue.getTime())) {
+        // VN là GMT+7, nên khi JS parse sẽ bị lùi về ngày hôm trước
+        // THÊM 1 NGÀY ĐỂ BÙ LẠI
+        const adjustedDate = new Date(dateValue);
+        adjustedDate.setDate(adjustedDate.getDate() + 1); // THÊM 1 NGÀY
+        
+        const year = adjustedDate.getFullYear();
+        const month = (adjustedDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = adjustedDate.getDate().toString().padStart(2, '0');
+        
+        console.log(`DEBUG: Date object (adjusted +1 day) -> ${year}-${month}-${day}`);
+        return `${year}-${month}-${day}`;
+    }
+    
+    console.log('DEBUG: Cannot parse date value');
+    return null;
+}
+
+    // THÊM HÀM NÀY SAU HÀM formatExcelDate
+    function debugExcelDateParsing(data, hasHeader) {
+        const startRow = hasHeader ? 1 : 0;
+        console.log('=== DEBUG EXCEL DATE PARSING ===');
+        
+        for (let i = startRow; i < Math.min(startRow + 10, data.length); i++) {
+            const row = data[i];
+            if (row && row.length > 11) {
+                const dateValue = row[11];
+                const result = formatExcelDate(dateValue);
+                console.log(`Row ${i + 1}:`, {
+                    raw: dateValue,
+                    type: typeof dateValue,
+                    result: result,
+                    'isDate?': dateValue instanceof Date
+                });
+            }
+        }
+        console.log('=== END DEBUG ===');
+    }
+
+    // Hàm convert Excel serial thành ngày
+    function convertExcelSerialToDate(serial) {
+    const num = parseFloat(serial);
+    if (isNaN(num)) return null;
+    
+    // Excel bắt đầu từ 01/01/1900
+    // Tạo Date object với giờ 12:00:00 để tránh timezone issues
+    const baseDate = new Date(1900, 0, 1, 12, 0, 0);
+    const resultDate = new Date(baseDate.getTime() + (num - 1) * 86400000);
+    
+    // Điều chỉnh bug năm nhuận 1900
+    if (num >= 60) {
+        resultDate.setDate(resultDate.getDate() - 1);
+    }
+    
+    // Lấy ngày tháng theo local time
+    const year = resultDate.getFullYear();
+    const month = (resultDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = resultDate.getDate().toString().padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+}
+
+    // Hàm parse date string
+    function parseAndFormatDateString(dateStr) {
+        if (!dateStr || typeof dateStr !== 'string') return null;
+        
+        const str = dateStr.trim();
+        if (!str) return null;
+        
+        console.log('Parsing date string:', str);
+        
+        const formats = [
+            { regex: /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/, handler: (m) => ({ day: m[1], month: m[2], year: m[3] }) },
+            { regex: /^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/, handler: (m) => ({ year: m[1], month: m[2], day: m[3] }) },
+            { regex: /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/, handler: (m) => ({ month: m[1], day: m[2], year: m[3] }) }
+        ];
+        
+        for (const format of formats) {
+            const match = str.match(format.regex);
+            if (match) {
+                const { day, month, year } = format.handler(match);
+                
+                const dayNum = parseInt(day);
+                const monthNum = parseInt(month);
+                const yearNum = parseInt(year);
+                
+                if (yearNum < 1900 || yearNum > 2100) continue;
+                if (monthNum < 1 || monthNum > 12) continue;
+                if (dayNum < 1 || dayNum > 31) continue;
+                
+                const dateObj = new Date(yearNum, monthNum - 1, dayNum);
+                if (isNaN(dateObj.getTime())) continue;
+                
+                return formatExcelDate(dateObj);
+            }
+        }
+        
+        return null;
+    }
+
+    // ====================================================
+    // MAPPING CỘT CỐ ĐỊNH - KHÔNG TỰ ĐỘNG NHẬN DIỆN
+    // ====================================================
+
+    // Lấy mapping cột mặc định - CỐ ĐỊNH THEO THỨ TỰ
+    function getFixedColumnMapping() {
+        return {
+            empCode: 0,          // Cột 1: MSNV
+            fullName: 1,         // Cột 2: Họ và tên
+            jobTitle: 2,         // Cột 3: Chức danh
+            task: 3,             // Cột 4: Công việc
+            quantity: 4,         // Cột 5: Sản lượng
+            planStartTime: 5,    // Cột 6: Từ (ĐK)
+            planEndTime: 6,      // Cột 7: Đến (ĐK)
+            actualStartTime: 7,  // Cột 8: Từ (TT)
+            actualEndTime: 8,    // Cột 9: Đến (TT)
+            actualTask: 9,       // Cột 10: Công việc TT
+            note: 10,            // Cột 11: Ghi chú
+            date: 11             // Cột 12: Ngày
+        };
+    }
+
+    // Hàm extract dữ liệu với mapping cố định
+    function extractEmployeeData(row) {
+    const mapping = getFixedColumnMapping();
+    
+    const getValue = (index, isDateField = false, isTimeField = false) => {
+        if (index !== null && index < row.length && row[index] !== undefined && row[index] !== null) {
+            const val = row[index];
+            
+            // Nếu là field date (cột 12)
+            if (isDateField && val) {
+                console.log(`Processing date field at column ${index}:`, val);
+                
+                // Ưu tiên parse theo định dạng VN
+                const vnDate = parseVietnamDate(val.toString());
+                if (vnDate) {
+                    console.log('Parsed as Vietnam date:', vnDate);
+                    return vnDate;
+                }
+                
+                // Nếu không được, dùng hàm formatExcelDate
+                return formatExcelDate(val);
+            }
+            
+            // Nếu là field time
+            if (isTimeField && val) {
+                return formatTimeCell(val);
+            }
+            
+            // Xử lý các field khác
+            return val.toString().trim();
+        }
+        return '';
+    };
+    
+    // Tạo employeeData với mapping cố định
+    const employeeData = {
+        empCode: getValue(mapping.empCode),
+        fullName: getValue(mapping.fullName),
+        jobTitle: getValue(mapping.jobTitle),
+        task: getValue(mapping.task),
+        quantity: getValue(mapping.quantity),
+        planStartTime: getValue(mapping.planStartTime, false, true),
+        planEndTime: getValue(mapping.planEndTime, false, true),
+        actualStartTime: getValue(mapping.actualStartTime, false, true),
+        actualEndTime: getValue(mapping.actualEndTime, false, true),
+        actualTask: getValue(mapping.actualTask),
+        note: getValue(mapping.note),
+        date: getValue(mapping.date, true, false)  // Cột 12 là ngày
+    };
+    
+    console.log('Extracted employee data:', employeeData);
+    return employeeData;
+}
+
+    // Định dạng thời gian từ Excel
+    function formatTimeCell(timeValue) {
+    if (!timeValue) return '';
+    
+    console.log('Formatting time:', timeValue, 'Type:', typeof timeValue);
+    
+    // Nếu là Date object (Excel có thể lưu time dưới dạng Date)
+    if (timeValue instanceof Date) {
+        const hours = timeValue.getHours().toString().padStart(2, '0');
+        const minutes = timeValue.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+    
+    // Nếu là số (Excel serial time: 0.5 = 12:00, 0.25 = 06:00, etc.)
+    if (!isNaN(timeValue) && !isNaN(parseFloat(timeValue))) {
+        const numValue = parseFloat(timeValue);
+        
+        // Excel time: 0.5 = 12:00, 0.25 = 06:00, etc.
+        if (numValue < 1 && numValue >= 0) {
+            const totalSeconds = numValue * 24 * 60 * 60;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+        
+        // Nếu là số nguyên nhỏ (như 10:00 có thể lưu là 10)
+        if (numValue >= 0 && numValue <= 24) {
+            const hours = Math.floor(numValue);
+            const minutes = Math.round((numValue - hours) * 60);
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+    }
+    
+    // Nếu là string có chứa ":", giữ nguyên
+    if (typeof timeValue === 'string' && timeValue.includes(':')) {
+        const parts = timeValue.split(':');
+        if (parts.length >= 2) {
+            const hours = parseInt(parts[0]) || 0;
+            const minutes = parseInt(parts[1]) || 0;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+    }
+    
+    // Nếu là string số (ví dụ: "1000" cho 10:00)
+    if (typeof timeValue === 'string' && !isNaN(timeValue) && timeValue.length >= 3) {
+        const str = timeValue.padStart(4, '0');
+        const hours = parseInt(str.substring(0, 2)) || 0;
+        const minutes = parseInt(str.substring(2, 4)) || 0;
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+    
+    // Trả về string gốc nếu không xác định được
+    return timeValue.toString().trim();
+}
+
+    // xử lý ngày việt nam
+    function parseVietnamDate(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    
+    const str = dateStr.trim();
+    
+    // Định dạng dd/mm/yyyy
+    const pattern1 = /^(\d{1,2})[\/](\d{1,2})[\/](\d{4})$/;
+    // Định dạng dd-mm-yyyy
+    const pattern2 = /^(\d{1,2})[-](\d{1,2})[-](\d{4})$/;
+    // Định dạng yyyy-mm-dd
+    const pattern3 = /^(\d{4})[-](\d{1,2})[-](\d{1,2})$/;
+    
+    let day, month, year;
+    
+    if (pattern1.test(str) || pattern2.test(str)) {
+        const match = str.match(pattern1) || str.match(pattern2);
+        day = parseInt(match[1]);
+        month = parseInt(match[2]);
+        year = parseInt(match[3]);
+    } else if (pattern3.test(str)) {
+        const match = str.match(pattern3);
+        year = parseInt(match[1]);
+        month = parseInt(match[2]);
+        day = parseInt(match[3]);
+    } else {
+        return null;
+    }
+    
+    // Validate
+    if (year < 1900 || year > 2100) return null;
+    if (month < 1 || month > 12) return null;
+    if (day < 1 || day > 31) return null;
+    
+    // Tạo Date với giờ 12:00 để tránh timezone
+    const date = new Date(year, month - 1, day, 12, 0, 0);
+    if (isNaN(date.getTime())) return null;
+    
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+}
+    
+    // ====================================================
+    // XỬ LÝ DỮ LIỆU EXCEL - MAPPING CỐ ĐỊNH
+    // ====================================================
+
+    function processExcelData(data) {
+        
+        const hasHeader = document.getElementById('hasHeader').checked;
+        
+        let startRow = 0;
+        if (hasHeader) {
+            startRow = 1;
+        }
+        // DEBUG: Hiển thị 5 dòng đầu để kiểm tra
+    console.log('=== DEBUG EXCEL DATA ===');
+    for (let i = startRow; i < Math.min(startRow + 5, data.length); i++) {
+        console.log(`Row ${i}:`, data[i]);
+        if (data[i] && data[i].length > 11) {
+            console.log(`  Column 12 (date):`, data[i][11], 'Type:', typeof data[i][11]);
+        }
+    }
+    console.log('=== END DEBUG ===');
+        
+        // Tạo object để nhóm dữ liệu theo ngày
+        const dataByDate = {};
+        let importedRows = 0;
+        let errors = 0;
+        
+        // Kiểm tra số cột
+        const maxColumns = Math.max(...data.slice(startRow).map(row => row.length));
+        console.log('Max columns in Excel:', maxColumns);
+        
+        if (maxColumns < 12) {
+            showNotification(`File chỉ có ${maxColumns} cột. Cần 12 cột theo đúng thứ tự!`, 'error');
+            return { importedRows: 0, errors: 1, totalRows: 0, daysImported: 0 };
+        }
+        
+        // BƯỚC 1: Nhóm dữ liệu theo ngày
+        for (let i = startRow; i < data.length; i++) {
+            const row = data[i];
+            if (!row || row.length === 0) continue;
+            
+            try {
+                // Dùng mapping cố định, không tự động nhận diện
+                const employeeData = extractEmployeeData(row);
+                
+                if (!employeeData.empCode && !employeeData.fullName) {
+                    continue;
+                }
+                
+                // Xác định ngày từ dữ liệu - LUÔN LẤY TỪ CỘT 12
+                let dateKey = null;
+                
+                // THỬ LẤY TỪ CỘT 12 (index 11)
+                if (row.length > 11 && row[11]) {
+                    const dateValue = row[11];
+                    console.log(`Row ${i + 1}, Column 12 value:`, dateValue);
+                    
+                    if (dateValue) {
+                        dateKey = formatExcelDate(dateValue);
+                        console.log(`Row ${i + 1}: Using date from column 12: ${dateKey}`);
+                    }
+                }
+                
+                // Nếu không có ngày từ cột 12, dùng ngày hiện tại
+                if (!dateKey) {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+                    const day = today.getDate().toString().padStart(2, '0');
+                    dateKey = `${year}-${month}-${day}`;
+                    console.log(`Row ${i + 1}: No date in column 12, using today: ${dateKey}`);
+                }
+                
+                if (!dataByDate[dateKey]) {
+                    dataByDate[dateKey] = [];
+                }
+                
+                dataByDate[dateKey].push(employeeData);
+                console.log(`Row ${i + 1} added to date: ${dateKey}`);
+                
+            } catch (error) {
+                console.error(`Lỗi khi xử lý dòng ${i + 1}:`, error, row);
+                errors++;
+            }
+        }
+        
+        // BƯỚC 2: Tạo ngày và thêm nhân viên
+        const dates = Object.keys(dataByDate).sort();
+        
+        console.log('Dates found:', dates);
+        
+        dates.forEach(dateKey => {
+            let dayId;
+            
+            if (dayMap.has(dateKey)) {
+                dayId = dayMap.get(dateKey);
+                console.log(`Date ${dateKey} already exists with dayId: ${dayId}`);
+            } else {
+                dayId = createNewDay(dateKey);
+                console.log(`Created new day ${dayId} for date: ${dateKey}`);
+            }
+            
+            const employees = dataByDate[dateKey];
+            console.log(`Adding ${employees.length} employees to day ${dayId} (${dateKey})`);
+            
+            employees.forEach((employeeData, index) => {
+                addEmployeeToDay(dayId, employeeData);
+                importedRows++;
+                console.log(`  Employee ${index + 1}: ${employeeData.fullName}`);
+            });
+        });
+        
+        return {
+            importedRows,
+            errors,
+            totalRows: data.length - startRow,
+            daysImported: dates.length
+        };
+    }
+
+    // ====================================================
+    // HÀM CHÍNH XỬ LÝ IMPORT EXCEL
+    // ====================================================
+
+    function importExcelFile() {
+    const fileInput = document.getElementById('excelFileInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        showNotification('Vui lòng chọn file Excel để import!', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            
+            // **ĐỌC EXCEL VỚI CẤU HÌNH ĐƠN GIẢN**
+            const workbook = XLSX.read(data, { 
+                type: 'array', 
+                cellDates: true,       // Để SheetJS parse dates
+                cellNF: false,
+                raw: false             // Lấy giá trị đã format
+            });
+            
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
+                header: 1, 
+                defval: ''
+            });
+            const hasHeader = document.getElementById('hasHeader').checked;
+            debugExcelDateParsing(jsonData, hasHeader);
+            
+            if (jsonData.length <= 1) {
+                showNotification('File Excel không có dữ liệu!', 'error');
+                return;
+            }
+
+            console.log('Dữ liệu Excel (5 dòng đầu):', jsonData.slice(0, 5));
+            
+            // Process dữ liệu
+            const result = processExcelData(jsonData);
+            
+            let message = `Đã import thành công ${result.importedRows} nhân viên`;
+            if (result.daysImported > 0) {
+                message += ` trong ${result.daysImported} ngày`;
+            }
+            
+            showNotification(message, 'success');
+            
+            fileInput.value = '';
+            
+        } catch (error) {
+            console.error('Lỗi khi đọc file Excel:', error);
+            showNotification('Có lỗi xảy ra khi đọc file Excel!', 'error');
+        }
+    };
+    
+    reader.readAsArrayBuffer(file);
+}
+
+    function processDateValue(dateValue) {
+    if (!dateValue) return null;
+    
+    const str = dateValue.toString().trim();
+    
+    // TH1: dd/mm/yyyy
+    if (str.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+        const parts = str.split('/');
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${year}-${month}-${day}`;
+    }
+    
+    // TH2: dd-mm-yyyy  
+    if (str.match(/^\d{1,2}-\d{1,2}-\d{4}$/)) {
+        const parts = str.split('-');
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${year}-${month}-${day}`;
+    }
+    
+    // TH3: yyyy-mm-dd (giữ nguyên)
+    if (str.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+        return str;
+    }
+    
+    return null;
+}
+
+    // ====================================================
+    // CÁC HÀM QUẢN LÝ NGÀY VÀ NHÂN VIÊN (GIỮ NGUYÊN)
+    // ====================================================
+
+    // Định dạng ngày hiển thị
+    function formatDisplayDate(dateStr) {
+        try {
+            const date = new Date(dateStr + 'T12:00:00');
+            return date.toLocaleDateString('vi-VN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch (e) {
+            return dateStr;
+        }
+    }
+
+    // Tạo ngày mới
+    function createNewDay(dateStr) {
+        dayCounter++;
+        const tableBody = document.getElementById('tableBody');
+
+        employeeCounter[dayCounter] = 0;
+
+        const dayRow = document.createElement('tr');
+        dayRow.className = 'day-row';
+        dayRow.id = `day-${dayCounter}`;
+        dayRow.setAttribute('data-day-id', dayCounter);
+        
+        const displayDate = formatDisplayDate(dateStr);
+        
+        dayRow.innerHTML = `
+            <td colspan="13">
+                <div class="day-cell">
+                    <div class="day-info">
+                        <span>Ngày:</span>
+                        <input type="date" class="day-input flatpickr-date" id="dayDate-${dayCounter}" value="${dateStr}" title="Chọn ngày">
+                        <span style="margin-left: 10px; font-weight: normal; color: #666; font-size: 13px;">(${displayDate})</span>
+                    </div>
+                    <div class="day-actions">
+                        <button type="button" class="btn-toggle-day" onclick="toggleDay(${dayCounter})" title="Thu/Phóng ngày" id="toggleBtn-${dayCounter}">
+                            <i class="fas fa-chevron-up"></i> <span class="btn-text"></span>
+                        </button>
+                        <button type="button" class="btn-add" onclick="openEmployeeModal(${dayCounter})" title="Thêm nhân viên">
+                            <i class="fas fa-user-plus"></i> <span class="btn-text">Thêm NV</span>
+                        </button>
+                        <button type="button" class="table-action-btn" onclick="removeDay(${dayCounter})" title="Xóa ngày">
+                            <i class="fas fa-trash"></i> <span class="btn-text">Xóa ngày</span>
+                        </button>
+                    </div>
+                </div>
+            </td>
+        `;
+
+        tableBody.appendChild(dayRow);
+
+        const dateInput = document.getElementById(`dayDate-${dayCounter}`);
+        flatpickr(dateInput, {
+            locale: "vn",
+            dateFormat: "Y-m-d",
+            defaultDate: dateStr
+        });
+
+        dayMap.set(dateStr, dayCounter);
+        
+        setTimeout(() => {
+            dayRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        return dayCounter;
+    }
+
+    // Thêm một hàng ngày mới
+    function addDay(dateStr = null) {
+        const today = new Date();
+        const defaultDate = dateStr || today.toISOString().split('T')[0];
+        
+        const dayId = createNewDay(defaultDate);
+        
+        return dayId;
+    }
+
+    // Mở modal thêm nhân viên
+    function openEmployeeModal(dayId) {
+        currentDayId = dayId;
+        const modal = document.getElementById('employeeModal');
+        
+        document.getElementById('employeeForm').reset();
+        
+        const inputs = modal.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.classList.remove('error');
+        });
+
+        const now = new Date();
+        const startHour = now.getHours().toString().padStart(2, '0');
+        const endHour = (now.getHours() + 1).toString().padStart(2, '0');
+        const minute = '00';
+
+        document.getElementById('modal_planStartTime').value = `${startHour}:${minute}`;
+        document.getElementById('modal_planEndTime').value = `${endHour}:${minute}`;
+        document.getElementById('modal_actualStartTime').value = `${startHour}:${minute}`;
+        document.getElementById('modal_actualEndTime').value = `${endHour}:${minute}`;
+
+        const timeInputs = modal.querySelectorAll('.flatpickr-time');
+        timeInputs.forEach(input => {
+            flatpickr(input, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                time_24hr: true
+            });
+        });
+
+        modal.style.display = 'block';
+    }
+
+    // Đóng modal
+    function closeEmployeeModal() {
+        const modal = document.getElementById('employeeModal');
+        modal.style.display = 'none';
+        currentDayId = null;
+    }
+
+    // Validate form
+    function validateEmployeeForm() {
+        let isValid = true;
+        const requiredFields = ['modal_empCode', 'modal_fullName', 'modal_jobTitle', 'modal_task'];
+
+        requiredFields.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (!input.value.trim()) {
+                input.classList.add('error');
+                isValid = false;
+            } else {
+                input.classList.remove('error');
+            }
+        });
+
+        return isValid;
+    }
+
+    // Submit form và thêm nhân viên vào bảng
+    function submitEmployeeForm() {
+        if (!validateEmployeeForm()) {
+            alert('Vui lòng điền đầy đủ các trường bắt buộc!');
+            return;
+        }
+
+        if (currentDayId === null) {
+            alert('Có lỗi xảy ra. Vui lòng thử lại!');
+            return;
+        }
+
+        const formData = {
+            empCode: document.getElementById('modal_empCode').value,
+            fullName: document.getElementById('modal_fullName').value,
+            jobTitle: document.getElementById('modal_jobTitle').value,
+            task: document.getElementById('modal_task').value,
+            quantity: document.getElementById('modal_quantity').value,
+            planStartTime: document.getElementById('modal_planStartTime').value,
+            planEndTime: document.getElementById('modal_planEndTime').value,
+            actualStartTime: document.getElementById('modal_actualStartTime').value,
+            actualEndTime: document.getElementById('modal_actualEndTime').value,
+            actualTask: document.getElementById('modal_actualTask').value,
+            note: document.getElementById('modal_note').value
+        };
+
+        addEmployeeToDay(currentDayId, formData);
+
+        showNotification('Đã thêm nhân viên thành công!', 'success');
+
+        closeEmployeeModal();
+    }
+
+    // Thêm nhân viên vào ngày
+    function addEmployeeToDay(dayId, data = null) {
+        employeeCounter[dayId] = (employeeCounter[dayId] || 0) + 1;
+        const employeeNumber = employeeCounter[dayId];
+        const tableBody = document.getElementById('tableBody');
+
+        const dayRow = document.getElementById(`day-${dayId}`);
+
+        if (!data) {
+            const now = new Date();
+            const startHour = now.getHours().toString().padStart(2, '0');
+            const endHour = (now.getHours() + 1).toString().padStart(2, '0');
+            const minute = '00';
+
+            data = {
+                empCode: '',
+                fullName: '',
+                jobTitle: '',
+                task: '',
+                quantity: '',
+                planStartTime: `${startHour}:${minute}`,
+                planEndTime: `${endHour}:${minute}`,
+                actualStartTime: `${startHour}:${minute}`,
+                actualEndTime: `${endHour}:${minute}`,
+                actualTask: '',
+                note: ''
+            };
+        }
+
+        const employeeRow = document.createElement('tr');
+        employeeRow.className = 'employee-row';
+        employeeRow.innerHTML = `
+            <td>
+                <button type="button" class="table-action-btn" onclick="removeEmployee(this, ${dayId})" title="Xóa nhân viên này">
+                    <i class="fas fa-trash"></i> <span class="btn-text">Xóa</span>
+                </button>
+            </td>
+            <td>${employeeNumber}</td>
+            <td><input type="text" class="form-input" placeholder="MSNV" name="empCode" value="${data.empCode}"></td>
+            <td><input type="text" class="form-input" placeholder="Họ và tên" name="fullName" value="${data.fullName}"></td>
+            <td><input type="text" class="form-input" placeholder="Chức danh" name="jobTitle" value="${data.jobTitle}"></td>
+            <td><input type="text" class="form-input" placeholder="Công việc" name="task" value="${data.task}"></td>
+            <td><input type="text" class="form-input" placeholder="Sản lượng" name="quantity" value="${data.quantity}"></td>
+            <td>
+                <div class="time-input-wrapper">
+                    <input type="time" class="form-input flatpickr-time" name="planStartTime" value="${data.planStartTime}" style="width: 100%; max-width: 100%;">
+                </div>
+            </td>
+            <td>
+                <div class="time-input-wrapper">
+                    <input type="time" class="form-input flatpickr-time" name="planEndTime" value="${data.planEndTime}" style="width: 100%; max-width: 100%;">
+                </div>
+            </td>
+            <td>
+                <div class="time-input-wrapper">
+                    <input type="time" class="form-input flatpickr-time" name="actualStartTime" value="${data.actualStartTime}" style="width: 100%; max-width: 100%;">
+                </div>
+            </td>
+            <td>
+                <div class="time-input-wrapper">
+                    <input type="time" class="form-input flatpickr-time" name="actualEndTime" value="${data.actualEndTime}" style="width: 100%; max-width: 100%;">
+                </div>
+            </td>
+            <td><input type="text" class="form-input" placeholder="Công việc TT" name="actualTask" value="${data.actualTask}"></td>
+            <td><input type="text" class="form-input" placeholder="Ghi chú" name="note" value="${data.note}"></td>
+        `;
+
+        let insertPosition = dayRow;
+        let nextRow = dayRow.nextSibling;
+
+        while (nextRow && !nextRow.classList.contains('day-row')) {
+            insertPosition = nextRow;
+            nextRow = nextRow.nextSibling;
+        }
+
+        insertPosition.parentNode.insertBefore(employeeRow, insertPosition.nextSibling);
+
+        const timeInputs = employeeRow.querySelectorAll('.flatpickr-time');
+        timeInputs.forEach(input => {
+            flatpickr(input, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                time_24hr: true
+            });
+        });
+        
+        updateEmployeeNumbersForDay(dayId);
+    }
+
+    // Xóa nhân viên khỏi một ngày cụ thể
+    function removeEmployee(button, dayId) {
+        const row = button.closest('tr');
+        const tableBody = document.getElementById('tableBody');
+
+        const dayRow = document.getElementById(`day-${dayId}`);
+        let employeeCount = 0;
+        let currentRow = dayRow.nextSibling;
+
+        while (currentRow && !currentRow.classList.contains('day-row')) {
+            if (currentRow.classList.contains('employee-row')) {
+                employeeCount++;
+            }
+            currentRow = currentRow.nextSibling;
+        }
+
+        if (employeeCount > 1) {
+            row.remove();
+            updateEmployeeNumbersForDay(dayId);
+            showNotification('Đã xóa nhân viên thành công!', 'success');
+        } else {
+            alert('Mỗi ngày cần ít nhất một nhân viên');
+        }
+    }
+
+    // Cập nhật số thứ tự nhân viên cho ngày cụ thể
+    function updateEmployeeNumbersForDay(dayId) {
+        const dayRow = document.getElementById(`day-${dayId}`);
+        let currentRow = dayRow.nextSibling;
+        let employeeNumber = 1;
+
+        while (currentRow && !currentRow.classList.contains('day-row')) {
+            if (currentRow.classList.contains('employee-row')) {
+                currentRow.querySelector('td:nth-child(2)').textContent = employeeNumber;
+                employeeNumber++;
+            }
+            currentRow = currentRow.nextSibling;
+        }
+
+        employeeCounter[dayId] = employeeNumber - 1;
+    }
+
+    // Thu/phóng một ngày
+    function toggleDay(dayId) {
+        const dayRow = document.getElementById(`day-${dayId}`);
+        const toggleBtn = document.getElementById(`toggleBtn-${dayId}`);
+        const isCollapsed = dayRow.classList.contains('day-collapsed');
+        
+        if (isCollapsed) {
+            dayRow.classList.remove('day-collapsed');
+            let currentRow = dayRow.nextSibling;
+            while (currentRow && !currentRow.classList.contains('day-row')) {
+                if (currentRow.classList.contains('employee-row')) {
+                    currentRow.style.display = '';
+                }
+                currentRow = currentRow.nextSibling;
+            }
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> <span class="btn-text"></span>';
+        } else {
+            dayRow.classList.add('day-collapsed');
+            let currentRow = dayRow.nextSibling;
+            while (currentRow && !currentRow.classList.contains('day-row')) {
+                if (currentRow.classList.contains('employee-row')) {
+                    currentRow.style.display = 'none';
+                }
+                currentRow = currentRow.nextSibling;
+            }
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> <span class="btn-text"></span>';
+        }
+    }
+
+    // Tìm kiếm trong bảng
+    function searchTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toUpperCase();
+        const tableBody = document.getElementById('tableBody');
+        const rows = tableBody.getElementsByClassName('employee-row');
+
+        for (let row of rows) {
+            row.classList.remove('highlight-row');
+            row.style.display = '';
+        }
+
+        if (filter.trim() === '') {
+            return;
+        }
+
+        let found = false;
+        for (let row of rows) {
+            const inputs = row.querySelectorAll('input[type="text"]');
+            let rowText = '';
+            
+            inputs.forEach(input => {
+                rowText += input.value.toUpperCase() + ' ';
+            });
+
+            if (rowText.indexOf(filter) > -1) {
+                row.classList.add('highlight-row');
+                found = true;
+                
+                let dayRow = row.previousSibling;
+                while (dayRow && !dayRow.classList.contains('day-row')) {
+                    dayRow = dayRow.previousSibling;
+                }
+                if (dayRow && dayRow.classList.contains('day-collapsed')) {
+                    const dayId = dayRow.getAttribute('data-day-id');
+                    toggleDay(dayId);
+                }
+            } else {
+                row.style.display = 'none';
+            }
+        }
+
+        if (found) {
+            const firstHighlight = tableBody.querySelector('.highlight-row');
+            if (firstHighlight) {
+                firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    // Xóa toàn bộ ngày và tất cả nhân viên của nó
+    function removeDay(dayId) {
+        if (confirm('Bạn có chắc chắn muốn xóa ngày này?\nTất cả thông tin nhân viên trong ngày sẽ bị mất.')) {
+            const dayRow = document.getElementById(`day-${dayId}`);
+            const tableBody = document.getElementById('tableBody');
+
+            const dateInput = dayRow.querySelector('.day-input');
+            if (dateInput && dateInput.value) {
+                dayMap.delete(dateInput.value);
+            }
+
+            let currentRow = dayRow.nextSibling;
+            while (currentRow && !currentRow.classList.contains('day-row')) {
+                const nextRow = currentRow.nextSibling;
+                if (currentRow.classList.contains('employee-row')) {
+                    tableBody.removeChild(currentRow);
+                }
+                currentRow = nextRow;
+            }
+
+            tableBody.removeChild(dayRow);
+
+            delete employeeCounter[dayId];
+
+            const remainingDays = document.querySelectorAll('.day-row');
+            if (remainingDays.length === 0) {
+                setTimeout(() => addDay(), 100);
+            }
+
+            showNotification('Đã xóa ngày thành công!', 'success');
+        }
+    }
+
+    // Hiển thị thông báo
+    function showNotification(message, type = 'success') {
+        const oldNotification = document.querySelector('.notification');
+        if (oldNotification) {
+            oldNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, 3000);
+    }
+
+    // Làm lại biểu mẫu
+    function resetForm() {
+        if (confirm('Bạn có chắc chắn muốn làm lại biểu mẫu?\nTất cả thông tin đã nhập sẽ bị xóa.')) {
+            const scrollPosition = window.scrollY;
+
+            document.querySelectorAll('.form-container:first-child input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            document.getElementById('searchInput').value = '';
+
+            const today = new Date();
+            const monthYearPicker = document.getElementById('monthYearPicker');
+            monthYearPicker._flatpickr.setDate(today);
+
+            const soInput = document.querySelector('.title-section input[type="text"]');
+            if (soInput) {
+                soInput.value = '';
+            }
+
+            dayCounter = 0;
+            employeeCounter = {};
+            dayMap.clear();
+
+            document.getElementById('excelFileInput').value = '';
+
+            addDay();
+
+            showNotification('Biểu mẫu đã được làm lại thành công!', 'success');
+
+            setTimeout(() => {
+                window.scrollTo(0, scrollPosition);
+            }, 10);
+        }
+    }
+
+    // Khởi tạo khi trang được tải
+    document.addEventListener('DOMContentLoaded', function () {
+        // Khởi tạo Flatpickr cho tháng/năm
+        const today = new Date();
+        flatpickr("#monthYearPicker", {
+            locale: "vn",
+            dateFormat: "m/Y",
+            altInput: true,
+            altFormat: "m/Y",
+            defaultDate: today,
+            plugins: [
+                new monthSelectPlugin({
+                    shorthand: false,
+                    dateFormat: "m/Y",
+                    altFormat: "m/Y"
+                })
+            ]
+        });
+
+        // Thêm ngày đầu tiên mặc định
+        addDay();
+
+        // Hiển thị chỉ báo cuộn trên mobile/tablet
+        if (window.innerWidth < 1025) {
+            document.querySelector('.scroll-indicator').style.display = 'flex';
+        }
+
+        // Đóng modal khi click bên ngoài
+        window.onclick = function(event) {
+            const modal = document.getElementById('employeeModal');
+            if (event.target == modal) {
+                closeEmployeeModal();
+            }
+        };
+    });
+
+    // Điều chỉnh responsive
+    window.addEventListener('resize', function () {
+        const indicator = document.querySelector('.scroll-indicator');
+        if (window.innerWidth < 1025) {
+            indicator.style.display = 'flex';
+        } else {
+            indicator.style.display = 'none';
+        }
+    });
+
+    // Tự động sao chép thời gian đăng ký sang thời gian thực tế
+    document.addEventListener('change', function (e) {
+        // CHỈ xử lý khi thay đổi ô planStartTime hoặc planEndTime
+    if (e.target.name === 'planStartTime') {
+        const row = e.target.closest('tr');
+        const actualStart = row.querySelector('input[name="actualStartTime"]');
+        
+        // CHỈ đồng bộ nếu ô actual còn trống hoặc là giá trị mặc định
+        if (!actualStart.value || actualStart.value === '00:00') {
+            actualStart.value = e.target.value;
+        }
+    }
+    
+    if (e.target.name === 'planEndTime') {
+        const row = e.target.closest('tr');
+        const actualEnd = row.querySelector('input[name="actualEndTime"]');
+        
+        // CHỈ đồng bộ nếu ô actual còn trống hoặc là giá trị mặc định
+        if (!actualEnd.value || actualEnd.value === '00:00') {
+            actualEnd.value = e.target.value;
+        }
+    }
+    });
+
+    // Tự động copy thời gian trong modal
+    document.getElementById('modal_planStartTime').addEventListener('change', function() {
+        const actualStart = document.getElementById('modal_actualStartTime');
+        // CHỈ đồng bộ nếu ô actual còn trống
+        if (!actualStart.value || actualStart.value === '00:00') {
+            actualStart.value = this.value;
+        }
+    });
+
+    document.getElementById('modal_planEndTime').addEventListener('change', function() {
+        const actualEnd = document.getElementById('modal_actualEndTime');
+        // CHỈ đồng bộ nếu ô actual còn trống
+        if (!actualEnd.value || actualEnd.value === '00:00') {
+            actualEnd.value = this.value;
+        }
+    });
+</script>
+</body>
+</html>
