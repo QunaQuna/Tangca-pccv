@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -34,8 +36,6 @@
             border-left: 4px solid #1a73e8;
         }
         
-        
-        
         .content-wrapper {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -44,9 +44,14 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .content-wrapper {
                 grid-template-columns: 1fr;
                 gap: 15px;
+                padding: 15px;
             }
             
             .avatar-container {
@@ -58,16 +63,16 @@
         }
         
         @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            
             .content-wrapper {
-                padding: 15px;
+                padding: 12px;
             }
             
-            header {
-                padding: 12px 15px;
-            }
-            
-            h1 {
-                font-size: 18px;
+            .container {
+                border-radius: 8px;
             }
         }
         
@@ -82,11 +87,12 @@
             flex-direction: column;
             align-items: center;
             width: 160px;
-            background: #f9fafc;
+            background: linear-gradient(135deg, #f9fafc 0%, #ffffff 100%);
             border-radius: 8px;
             padding: 15px;
             border: 1px solid #e1e5eb;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         
         .form-group {
@@ -147,6 +153,7 @@
             font-size: 14px;
             padding: 4px;
             display: none;
+            z-index: 1;
         }
         
         .input-with-icon .field-icon {
@@ -192,6 +199,7 @@
             font-size: 14px;
             padding: 4px;
             display: none;
+            z-index: 1;
         }
         
         .select-with-icon .dropdown-icon {
@@ -212,23 +220,41 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: #e0f2ff;
+            background: linear-gradient(135deg, #e0f2ff 0%, #bae6fd 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 12px;
             border: 3px solid #ffffff;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+            overflow: hidden;
+            position: relative;
         }
         
-        .employee-avatar-initials {
-            color: #1a73e8;
-            font-size: 28px;
-            font-weight: bold;
+        .employee-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .employee-avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+        }
+        
+        .employee-avatar-placeholder i {
+            font-size: 40px;
+            color: white;
         }
         
         .employee-info {
             text-align: center;
+            width: 100%;
         }
         
         .employee-name {
@@ -250,7 +276,7 @@
             font-weight: 500;
             font-size: 12px;
             background: #e8f0fe;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 12px;
             display: inline-block;
             max-width: 100%;
@@ -269,9 +295,15 @@
         }
         
         .checkbox-group input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             accent-color: #1a73e8;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            cursor: pointer;
+            user-select: none;
         }
         
         .time-section {
@@ -350,9 +382,9 @@
         }
         
         .total-time {
-            background: #e8f0fe;
-            padding: 10px 15px;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%);
+            padding: 12px 15px;
+            border-radius: 8px;
             font-weight: 600;
             color: #1a73e8;
             text-align: center;
@@ -362,6 +394,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid #c2dbfe;
         }
         
         .hazard-section {
@@ -410,8 +443,8 @@
         }
         
         .hazard-checkbox {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -431,7 +464,7 @@
             width: 100%;
             height: 100%;
             border: 2px solid #d1d9e6;
-            border-radius: 6px;
+            border-radius: 8px;
             background: white;
             display: flex;
             align-items: center;
@@ -443,36 +476,29 @@
         }
         
         .hazard-checkbox input:checked ~ .checkmark {
-            background: #1a73e8;
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
             border-color: #1a73e8;
             color: white;
+            transform: scale(1.05);
         }
         
         .hazard-checkbox input:checked ~ .checkmark::after {
             content: "✓";
-            font-size: 18px;
+            font-size: 20px;
         }
         
         .hazard-number {
-            font-weight: bold;
+            font-weight: 600;
             color: #555;
             font-size: 13px;
         }
         
         .output-section {
             margin-top: 20px;
-            background: #f1f8ff;
+            background: linear-gradient(135deg, #f1f8ff 0%, #e8f0fe 100%);
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #d1e9ff;
-        }
-        
-        .output-options {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
         }
         
         .output-option {
@@ -482,9 +508,18 @@
         }
         
         .output-option input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             accent-color: #1a73e8;
+            cursor: pointer;
+        }
+        
+        .output-option label {
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
         }
         
         .output-fields {
@@ -519,10 +554,18 @@
         
         .output-combo select,
         .output-combo input {
-            padding: 8px 12px;
+            padding: 10px 12px;
             border: 1px solid #d1d9e6;
             border-radius: 6px;
             font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .output-combo select:focus,
+        .output-combo input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
         }
         
         .output-combo select {
@@ -559,6 +602,7 @@
             border-radius: 6px;
             font-size: 14px;
             resize: vertical;
+            transition: all 0.3s;
         }
         
         .notes-section textarea:focus {
@@ -574,17 +618,17 @@
             justify-content: center;
             padding: 15px 20px;
             border-top: 1px solid #e1e5eb;
-            background: #f9fafc;
+            background: linear-gradient(135deg, #f9fafc 0%, #ffffff 100%);
         }
         
         .btn-add {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
@@ -593,12 +637,13 @@
             gap: 8px;
             width: 100%;
             max-width: 300px;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
         }
         
         .btn-add:hover {
-            background: linear-gradient(135deg, #059669, #10b981);
+            background: linear-gradient(135deg, #059669, #047857);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
         .btn-add:active {
@@ -615,56 +660,106 @@
             .input-with-icon select,
             .select-with-icon select {
                 padding: 12px 40px 12px 12px;
-                font-size: 16px; /* Tăng kích thước chữ cho dễ chạm */
+                font-size: 16px;
             }
             
             .btn-add {
-                padding: 12px 20px;
-                min-height: 44px; /* Đạt tiêu chuẩn touch target */
+                padding: 14px 24px;
+                min-height: 48px;
             }
             
             .hazard-checkbox {
-                width: 50px;
-                height: 50px;
+                width: 54px;
+                height: 54px;
             }
             
             .clear-btn,
             .field-icon,
             .dropdown-icon {
+                min-width: 44px;
                 min-height: 44px;
                 display: flex;
                 align-items: center;
+                justify-content: center;
             }
+            
+            .checkbox-group input[type="checkbox"],
+            .output-option input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+            }
+        }
+        
+        /* Tối ưu cho màn hình nhỏ */
+        @media (max-width: 375px) {
+            .form-group label,
+            .time-label,
+            .hazard-label {
+                font-size: 13px;
+            }
+            
+            .input-with-icon input,
+            .input-with-icon select,
+            .select-with-icon select {
+                font-size: 13px;
+                padding: 9px 38px 9px 10px;
+            }
+            
+            .employee-name {
+                font-size: 14px;
+            }
+            
+            .employee-id {
+                font-size: 12px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .container {
+            animation: fadeIn 0.4s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header: Chọn nhân viên -->
+        <div style="padding: 20px; border-bottom: 1px solid #e1e5eb; background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="employeeSelect">
+                    <i class="fas fa-user"></i>
+                    Nhân viên
+                </label>
+                <div class="select-with-icon">
+                    <select id="employeeSelect" required>
+                        <option value="" selected disabled>Chọn nhân viên...</option>
+                        <option value="02170073" data-avatar="https://i.pravatar.cc/150?img=12">02170073 -- Trần Quốc Lợi -- Trường ca Giao nhận -- CNBX</option>
+                        <option value="02170074" data-avatar="https://i.pravatar.cc/150?img=33">02170074 -- Nguyễn Văn A -- Kho hàng -- CNBX</option>
+                        <option value="02170075" data-avatar="https://i.pravatar.cc/150?img=45">02170075 -- Lê Thị B -- Vận chuyển -- CNBX</option>
+                    </select>
+                    <button type="button" class="clear-btn" onclick="clearSelect('employeeSelect')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <span class="dropdown-icon">
+                        <i class="fas fa-chevron-down"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
         
         <div class="content-wrapper">
             <!-- Cột trái: Form nhập liệu -->
             <div class="form-section">
-                <div class="form-group">
-                    <label for="employeeSelect">
-                        <i class="fas fa-user"></i>
-                        Nhân viên
-                    </label>
-                    <div class="select-with-icon">
-                        <select id="employeeSelect" required>
-                            <option value="" selected disabled>Chọn nhân viên...</option>
-                            <option value="02170073">02170073 -- Trần Quốc Lợi -- Trường ca Giao nhận -- CNBX</option>
-                            <option value="02170074">02170074 -- Nguyễn Văn A -- Kho hàng -- CNBX</option>
-                            <option value="02170075">02170075 -- Lê Thị B -- Vận chuyển -- CNBX</option>
-                        </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('employeeSelect')">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <span class="dropdown-icon">
-                            <i class="fas fa-chevron-down"></i>
-                        </span>
-                    </div>
-                </div>
-                
                 <div class="form-group">
                     <label for="shipName">
                         <i class="fas fa-ship"></i>
@@ -789,7 +884,10 @@
             <!-- Cột phải: Avatar -->
             <div class="avatar-container">
                 <div class="employee-avatar">
-                    <div class="employee-avatar-initials" id="avatarInitials">L</div>
+                    <img id="employeeAvatarImg" src="https://i.pravatar.cc/150?img=12" alt="Avatar" style="display: block;">
+                    <div class="employee-avatar-placeholder" id="employeeAvatarPlaceholder" style="display: none;">
+                        <i class="fas fa-user"></i>
+                    </div>
                 </div>
                 <div class="employee-info">
                     <div class="employee-name" id="employeeName">Trần Quốc Lợi</div>
@@ -944,39 +1042,32 @@
             </div>
             
             <div class="output-section">
-                <div class="output-options">
-                    <div class="output-option">
+                <div class="output-field" style="margin-bottom: 15px;">
+                    <div class="output-option" style="margin-bottom: 8px;">
                         <input type="checkbox" id="outputQuantity" checked>
                         <label for="outputQuantity">Sản lượng</label>
                     </div>
-                    <div class="output-option">
-                        <input type="checkbox" id="outputTime">
-                        <label for="outputTime">Thời gian</label>
+                    <div class="output-combo">
+                        <select id="quantityType">
+                            <option value="Container">Container</option>
+                            <option value="Tấn">Tấn</option>
+                            <option value="Kiện">Kiện</option>
+                        </select>
+                        <input type="number" id="quantityValue" value="3" min="0">
                     </div>
                 </div>
                 
-                <div class="output-fields">
-                    <div class="output-field" id="quantityField">
-                        <label>Sản lượng</label>
-                        <div class="output-combo">
-                            <select id="quantityType">
-                                <option value="Container">Container</option>
-                                <option value="Tấn">Tấn</option>
-                                <option value="Kiện">Kiện</option>
-                            </select>
-                            <input type="number" id="quantityValue" value="3" min="0">
-                        </div>
+                <div class="output-field">
+                    <div class="output-option" style="margin-bottom: 8px;">
+                        <input type="checkbox" id="outputTime">
+                        <label for="outputTime">Thời gian</label>
                     </div>
-                    
-                    <div class="output-field" id="timeField" style="display: none;">
-                        <label>Thời gian</label>
-                        <div class="output-combo">
-                            <select id="timeType">
-                                <option value="Báo trì, báo dưỡng thiết bị">Báo trì, báo dưỡng thiết bị</option>
-                                <option value="Sửa chữa">Sửa chữa</option>
-                                <option value="Kiểm tra">Kiểm tra</option>
-                            </select>
-                        </div>
+                    <div class="output-combo">
+                        <select id="timeType">
+                            <option value="Báo trì, báo dưỡng thiết bị">Báo trì, báo dưỡng thiết bị</option>
+                            <option value="Sửa chữa">Sửa chữa</option>
+                            <option value="Kiểm tra">Kiểm tra</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -998,6 +1089,10 @@
         </div>
     </div>
     
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
@@ -1041,6 +1136,7 @@
             const selectedOption = select.options[select.selectedIndex];
             const value = selectedOption.value;
             const text = selectedOption.text;
+            const avatarUrl = selectedOption.getAttribute('data-avatar');
             
             if (value) {
                 // Lấy thông tin từ text option (format: "ID -- Tên -- Bộ phận -- Chức vụ")
@@ -1048,11 +1144,24 @@
                 const id = parts[0];
                 const name = parts[1];
                 
-                // Cập nhật avatar với chữ cái đầu của họ (chữ cái cuối cùng trong tên)
-                const nameParts = name.split(' ');
-                const lastName = nameParts[nameParts.length - 1]; // Lấy họ
-                const initials = lastName.charAt(0).toUpperCase(); // Chỉ lấy chữ cái đầu của họ
-                document.getElementById('avatarInitials').textContent = initials;
+                // Cập nhật avatar
+                const avatarImg = document.getElementById('employeeAvatarImg');
+                const avatarPlaceholder = document.getElementById('employeeAvatarPlaceholder');
+                
+                if (avatarUrl) {
+                    avatarImg.src = avatarUrl;
+                    avatarImg.style.display = 'block';
+                    avatarPlaceholder.style.display = 'none';
+                    
+                    // Xử lý lỗi khi không load được ảnh
+                    avatarImg.onerror = function() {
+                        this.style.display = 'none';
+                        avatarPlaceholder.style.display = 'flex';
+                    };
+                } else {
+                    avatarImg.style.display = 'none';
+                    avatarPlaceholder.style.display = 'flex';
+                }
                 
                 // Cập nhật thông tin
                 document.getElementById('employeeName').textContent = name;
@@ -1092,33 +1201,23 @@
                     }
                     
                     // Tính chênh lệch thời gian (miliseconds)
-                    const diffMs = endDateTime - startDateTime;
+                    let diffMs = endDateTime - startDateTime;
                     
                     // Nếu thời gian kết thúc nhỏ hơn thời gian bắt đầu, có thể là qua ngày
                     if (diffMs < 0) {
-                        // Giả sử kết thúc vào ngày hôm sau
                         const nextDay = new Date(endDateTime);
                         nextDay.setDate(nextDay.getDate() + 1);
-                        const adjustedDiffMs = nextDay - startDateTime;
-                        
-                        const totalHours = Math.floor(adjustedDiffMs / (1000 * 60 * 60));
-                        const totalMinutes = Math.floor((adjustedDiffMs % (1000 * 60 * 60)) / (1000 * 60));
-                        
-                        if (totalMinutes > 0) {
-                            document.getElementById('totalTime').textContent = `${totalHours} giờ ${totalMinutes} phút`;
-                        } else {
-                            document.getElementById('totalTime').textContent = `${totalHours} giờ`;
-                        }
+                        diffMs = nextDay - startDateTime;
+                    }
+                    
+                    // Tính giờ và phút
+                    const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const totalMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    if (totalMinutes > 0) {
+                        document.getElementById('totalTime').textContent = `${totalHours} giờ ${totalMinutes} phút`;
                     } else {
-                        // Tính giờ và phút
-                        const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-                        const totalMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                        
-                        if (totalMinutes > 0) {
-                            document.getElementById('totalTime').textContent = `${totalHours} giờ ${totalMinutes} phút`;
-                        } else {
-                            document.getElementById('totalTime').textContent = `${totalHours} giờ`;
-                        }
+                        document.getElementById('totalTime').textContent = `${totalHours} giờ`;
                     }
                 } catch (error) {
                     console.error("Lỗi tính toán thời gian:", error);
@@ -1136,7 +1235,12 @@
             select.dispatchEvent(new Event('change'));
             
             if (selectId === 'employeeSelect') {
-                document.getElementById('avatarInitials').textContent = 'NV';
+                const avatarImg = document.getElementById('employeeAvatarImg');
+                const avatarPlaceholder = document.getElementById('employeeAvatarPlaceholder');
+                
+                avatarImg.style.display = 'none';
+                avatarPlaceholder.style.display = 'flex';
+                
                 document.getElementById('employeeName').textContent = 'Nhân viên';
                 document.getElementById('employeeId').textContent = 'ID';
             }
@@ -1149,17 +1253,6 @@
             input.dispatchEvent(new Event('change'));
             calculateTotalTime();
         }
-        
-        // Xử lý hiển thị/ẩn các trường sản lượng/thời gian
-        document.getElementById('outputQuantity').addEventListener('change', function() {
-            const quantityField = document.getElementById('quantityField');
-            quantityField.style.display = this.checked ? 'block' : 'none';
-        });
-        
-        document.getElementById('outputTime').addEventListener('change', function() {
-            const timeField = document.getElementById('timeField');
-            timeField.style.display = this.checked ? 'block' : 'none';
-        });
         
         // Tự động hiển thị nút xóa khi có giá trị
         document.querySelectorAll('select, input[type="text"]').forEach(element => {
@@ -1200,7 +1293,60 @@
         
         // Xử lý thêm mới tác nghiệp
         document.getElementById('addOperationBtn').addEventListener('click', function() {
-            alert('Thêm mới tác nghiệp thành công!');
+            // Thu thập dữ liệu từ form
+            const formData = {
+                employee: document.getElementById('employeeSelect').value,
+                shipName: document.getElementById('shipName').value,
+                workPlace: document.getElementById('workPlace').value,
+                productName: document.getElementById('productName').value,
+                jobType: document.getElementById('jobType').value,
+                plan: document.getElementById('plan').value,
+                vehicle: document.getElementById('vehicle').value,
+                throughShift: document.getElementById('throughShift').checked,
+                startDate: document.getElementById('startDate').value,
+                startTime: document.getElementById('startTime').value,
+                endDate: document.getElementById('endDate').value,
+                endTime: document.getElementById('endTime').value,
+                hazards: [],
+                outputType: document.getElementById('outputQuantity').checked ? 'quantity' : 'time',
+                notes: document.getElementById('notes').value
+            };
+            
+            // Thu thập hầm hàng đã chọn
+            for (let i = 1; i <= 6; i++) {
+                if (document.getElementById(`hazard${i}`).checked) {
+                    formData.hazards.push(i);
+                }
+            }
+            
+            // Thêm thông tin sản lượng hoặc thời gian
+            if (formData.outputType === 'quantity') {
+                formData.quantityType = document.getElementById('quantityType').value;
+                formData.quantityValue = document.getElementById('quantityValue').value;
+            } else {
+                formData.timeType = document.getElementById('timeType').value;
+            }
+            
+            console.log('Dữ liệu form:', formData);
+            
+            // Hiển thị thông báo thành công với SweetAlert2
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: 'Thêm mới tác nghiệp thành công!',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#10b981',
+                timer: 2000,
+                timerProgressBar: true
+            });
+
+            // Reset form sau khi thêm thành công
+            // Bạn có thể tùy chỉnh việc reset các trường theo nhu cầu
+            document.getElementById('employeeSelect').value = '';
+            clearSelect('employeeSelect');
+            
+            
+
             // Ở đây bạn có thể thêm logic để gửi dữ liệu lên server
         });
     </script>
