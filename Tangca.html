@@ -1247,761 +1247,779 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 
     <script>
+        
         let employeeCounter = 0;
+let selectedFile = null; // Biến lưu trữ file đã chọn
 
-        // Xử lý chọn file        
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                displayFileName(file.name);
-                document.getElementById('uploadBtn').disabled = false;
-            }
-        }
-
-        // Hiển thị tên file đã chọn
-        function displayFileName(name) {
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            const fileName = document.getElementById('fileName');
-            fileName.textContent = name;
-            fileNameDisplay.classList.add('active');
-        }
-
-        // Xóa file đã chọn
-        function clearFileSelection() {
-            const fileInput = document.getElementById('excelFileInput');
-            fileInput.value = '';
-            document.getElementById('fileNameDisplay').classList.remove('active');
+// Xử lý chọn file        
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        // Có file mới được chọn
+        selectedFile = file;
+        displayFileName(file.name);
+        document.getElementById('uploadBtn').disabled = false;
+    } else {
+        // User cancel hoặc không chọn file
+        // Kiểm tra xem có file đã được chọn trước đó không
+        if (selectedFile) {
+            // Giữ nguyên file cũ bằng cách restore lại DataTransfer
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(selectedFile);
+            event.target.files = dataTransfer.files;
+            // Giữ nguyên hiển thị và trạng thái nút
+        } else {
+            // Không có file nào, disable nút upload
             document.getElementById('uploadBtn').disabled = true;
         }
+    }
+}
 
-        // Tải file template Excel
-        function downloadTemplate() {
-            const templateData = [
-                ["MSNV", "Họ và tên", "Chức danh", "Công việc", "Sản lượng", "Từ (Ngày & Giờ)", "Đến (Ngày & Giờ)", "Ghi chú"],
-                ["NV001", "Nguyễn Văn A", "Kỹ sư", "Sửa chữa máy", "10", "2024-01-15 08:00", "2024-01-15 17:00", "Ghi chú 1"],
-                ["NV002", "Trần Thị B", "Kỹ thuật viên", "Bảo trì", "5", "2024-01-15 09:00", "2024-01-15 18:00", "Ghi chú 2"],
-                ["NV003", "Lê Văn C", "Công nhân", "Lắp ráp", "20", "2024-01-15 20:00", "2024-01-16 04:00", "Làm đêm"]
-            ];
+// Hiển thị tên file đã chọn
+function displayFileName(name) {
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const fileName = document.getElementById('fileName');
+    fileName.textContent = name;
+    fileNameDisplay.classList.add('active');
+}
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(templateData);
-            
-            const colWidths = [
-                {wch: 10}, {wch: 20}, {wch: 15}, {wch: 20},
-                {wch: 10}, {wch: 18}, {wch: 18}, {wch: 20}
-            ];
-            ws['!cols'] = colWidths;
+// Xóa file đã chọn
+function clearFileSelection() {
+    const fileInput = document.getElementById('excelFileInput');
+    fileInput.value = '';
+    selectedFile = null;
+    document.getElementById('fileNameDisplay').classList.remove('active');
+    document.getElementById('uploadBtn').disabled = true;
+}
 
-            XLSX.utils.book_append_sheet(wb, ws, "Template");
+// Tải file template Excel
+function downloadTemplate() {
+    const templateData = [
+        ["MSNV", "Họ và tên", "Chức danh", "Công việc", "Sản lượng", "Từ (Ngày & Giờ)", "Đến (Ngày & Giờ)", "Ghi chú"],
+        ["NV001", "Nguyễn Văn A", "Kỹ sư", "Sửa chữa máy", "10", "2024-01-15 08:00", "2024-01-15 17:00", "Ghi chú 1"],
+        ["NV002", "Trần Thị B", "Kỹ thuật viên", "Bảo trì", "5", "2024-01-15 09:00", "2024-01-15 18:00", "Ghi chú 2"],
+        ["NV003", "Lê Văn C", "Công nhân", "Lắp ráp", "20", "2024-01-15 20:00", "2024-01-16 04:00", "Làm đêm"]
+    ];
 
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-            
-            function s2ab(s) {
-                const buf = new ArrayBuffer(s.length);
-                const view = new Uint8Array(buf);
-                for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(templateData);
+    
+    const colWidths = [
+        {wch: 10}, {wch: 20}, {wch: 15}, {wch: 20},
+        {wch: 10}, {wch: 18}, {wch: 18}, {wch: 20}
+    ];
+    ws['!cols'] = colWidths;
 
-            const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "template_dang_ky_lam_viec.xlsx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+    XLSX.utils.book_append_sheet(wb, ws, "Template");
 
-            showNotification('Đã tải template thành công!', 'success');
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+    
+    function s2ab(s) {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+    }
+
+    const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "template_dang_ky_lam_viec.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showNotification('Đã tải template thành công!', 'success');
+}
+
+// Định dạng ngày giờ từ Excel
+function formatExcelDateTime(dateTimeValue) {
+    if (!dateTimeValue) return null;
+    
+    if (dateTimeValue instanceof Date && !isNaN(dateTimeValue.getTime())) {
+        const year = dateTimeValue.getFullYear();
+        const month = (dateTimeValue.getMonth() + 1).toString().padStart(2, '0');
+        const day = dateTimeValue.getDate().toString().padStart(2, '0');
+        const hours = dateTimeValue.getHours().toString().padStart(2, '0');
+        const minutes = dateTimeValue.getMinutes().toString().padStart(2, '0');
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+    if (typeof dateTimeValue === 'string') {
+        const str = dateTimeValue.toString().trim();
+        
+        if (str.match(/^\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}$/)) {
+            return str.replace(' ', 'T');
         }
-
-
-        // Định dạng ngày giờ từ Excel
-        function formatExcelDateTime(dateTimeValue) {
-            if (!dateTimeValue) return null;
+        
+        if (str.match(/^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}$/)) {
+            const [datePart, timePart] = str.split(' ');
+            const [day, month, year] = datePart.split('/');
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}`;
+        }
+        
+        if (!isNaN(dateTimeValue) && !isNaN(parseFloat(dateTimeValue))) {
+            const num = parseFloat(dateTimeValue);
             
-            if (dateTimeValue instanceof Date && !isNaN(dateTimeValue.getTime())) {
-                const year = dateTimeValue.getFullYear();
-                const month = (dateTimeValue.getMonth() + 1).toString().padStart(2, '0');
-                const day = dateTimeValue.getDate().toString().padStart(2, '0');
-                const hours = dateTimeValue.getHours().toString().padStart(2, '0');
-                const minutes = dateTimeValue.getMinutes().toString().padStart(2, '0');
+            if (num >= 1 && num < 100000) {
+                let adjustedNum = num;
+                if (num >= 60) adjustedNum = num - 1;
                 
-                return `${year}-${month}-${day}T${hours}:${minutes}`;
-            }
-            
-            if (typeof dateTimeValue === 'string') {
-                const str = dateTimeValue.toString().trim();
+                const baseDays = Math.floor(adjustedNum);
+                const fraction = adjustedNum - baseDays;
                 
-                if (str.match(/^\d{4}-\d{1,2}-\d{1,2} \d{1,2}:\d{1,2}$/)) {
-                    return str.replace(' ', 'T');
-                }
+                const utcDate = new Date(Date.UTC(1899, 11, 30 + baseDays, 12, 0, 0, 0));
                 
-                if (str.match(/^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}$/)) {
-                    const [datePart, timePart] = str.split(' ');
-                    const [day, month, year] = datePart.split('/');
-                    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}`;
-                }
+                if (num >= 60) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
                 
-                if (!isNaN(dateTimeValue) && !isNaN(parseFloat(dateTimeValue))) {
-                    const num = parseFloat(dateTimeValue);
-                    
-                    if (num >= 1 && num < 100000) {
-                        let adjustedNum = num;
-                        if (num >= 60) adjustedNum = num - 1;
-                        
-                        const baseDays = Math.floor(adjustedNum);
-                        const fraction = adjustedNum - baseDays;
-                        
-                        const utcDate = new Date(Date.UTC(1899, 11, 30 + baseDays, 12, 0, 0, 0));
-                        
-                        if (num >= 60) utcDate.setUTCDate(utcDate.getUTCDate() - 1);
-                        
-                        const hours = Math.floor(fraction * 24);
-                        const minutes = Math.floor((fraction * 24 - hours) * 60);
-                        
-                        utcDate.setUTCHours(utcDate.getUTCHours() + hours);
-                        utcDate.setUTCMinutes(utcDate.getUTCMinutes() + minutes);
-                        
-                        const utcYear = utcDate.getUTCFullYear();
-                        const utcMonth = (utcDate.getUTCMonth() + 1).toString().padStart(2, '0');
-                        const utcDay = utcDate.getUTCDate().toString().padStart(2, '0');
-                        const utcHours = utcDate.getUTCHours().toString().padStart(2, '0');
-                        const utcMinutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
-                        
-                        return `${utcYear}-${utcMonth}-${utcDay}T${utcHours}:${utcMinutes}`;
-                    }
-                }
-            }
-            
-            return null;
-        }
-
-        // Lấy mapping cột cố định
-        function getFixedColumnMapping() {
-            return {
-                empCode: 0,
-                fullName: 1,
-                jobTitle: 2,
-                task: 3,
-                quantity: 4,
-                planStartTime: 5,
-                planEndTime: 6,
-                note: 7
-            };
-        }
-
-        // Trích xuất dữ liệu nhân viên từ dòng Excel
-        function extractEmployeeData(row) {
-            const mapping = getFixedColumnMapping();
-            
-            const getValue = (index, isDateTimeField = false) => {
-                if (index !== null && index < row.length && row[index] !== undefined && row[index] !== null) {
-                    const val = row[index];
-                    
-                    if (isDateTimeField && val) {
-                        const formatted = formatExcelDateTime(val);
-                        return formatted || '';
-                    }
-                    
-                    return val.toString().trim();
-                }
-                return '';
-            };
-            
-            return {
-                empCode: getValue(mapping.empCode),
-                fullName: getValue(mapping.fullName),
-                jobTitle: getValue(mapping.jobTitle),
-                task: getValue(mapping.task),
-                quantity: getValue(mapping.quantity),
-                planStartTime: getValue(mapping.planStartTime, true),
-                planEndTime: getValue(mapping.planEndTime, true),
-                note: getValue(mapping.note)
-            };
-        }
-
-        // Xử lý dữ liệu Excel và cập nhật bảng
-        function processExcelData(data) {
-            const hasHeader = document.getElementById('hasHeader').checked;
-            let startRow = hasHeader ? 1 : 0;
-            
-            let importedRows = 0;
-            let updatedRows = 0;
-            let errors = 0;
-            
-            const maxColumns = Math.max(...data.slice(startRow).map(row => row.length));
-            
-            if (maxColumns < 8) {
-                showNotification(`File chỉ có ${maxColumns} cột. Cần 8 cột theo đúng thứ tự!`, 'error');
-                return { importedRows: 0, updatedRows: 0, errors: 1, totalRows: 0 };
-            }
-            
-            const tableBody = document.getElementById('tableBody');
-            let currentRowIndex = 0;
-            const existingRows = Array.from(tableBody.querySelectorAll('.employee-row'));
-            
-            for (let i = startRow; i < data.length; i++) {
-                const row = data[i];
-                if (!row || row.length === 0) continue;
+                const hours = Math.floor(fraction * 24);
+                const minutes = Math.floor((fraction * 24 - hours) * 60);
                 
-                try {
-                    const employeeData = extractEmployeeData(row);
+                utcDate.setUTCHours(utcDate.getUTCHours() + hours);
+                utcDate.setUTCMinutes(utcDate.getUTCMinutes() + minutes);
+                
+                const utcYear = utcDate.getUTCFullYear();
+                const utcMonth = (utcDate.getUTCMonth() + 1).toString().padStart(2, '0');
+                const utcDay = utcDate.getUTCDate().toString().padStart(2, '0');
+                const utcHours = utcDate.getUTCHours().toString().padStart(2, '0');
+                const utcMinutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
+                
+                return `${utcYear}-${utcMonth}-${utcDay}T${utcHours}:${utcMinutes}`;
+            }
+        }
+    }
+    
+    return null;
+}
+
+// Lấy mapping cột cố định
+function getFixedColumnMapping() {
+    return {
+        empCode: 0,
+        fullName: 1,
+        jobTitle: 2,
+        task: 3,
+        quantity: 4,
+        planStartTime: 5,
+        planEndTime: 6,
+        note: 7
+    };
+}
+
+// Trích xuất dữ liệu nhân viên từ dòng Excel
+function extractEmployeeData(row) {
+    const mapping = getFixedColumnMapping();
+    
+    const getValue = (index, isDateTimeField = false) => {
+        if (index !== null && index < row.length && row[index] !== undefined && row[index] !== null) {
+            const val = row[index];
+            
+            if (isDateTimeField && val) {
+                const formatted = formatExcelDateTime(val);
+                return formatted || '';
+            }
+            
+            return val.toString().trim();
+        }
+        return '';
+    };
+    
+    return {
+        empCode: getValue(mapping.empCode),
+        fullName: getValue(mapping.fullName),
+        jobTitle: getValue(mapping.jobTitle),
+        task: getValue(mapping.task),
+        quantity: getValue(mapping.quantity),
+        planStartTime: getValue(mapping.planStartTime, true),
+        planEndTime: getValue(mapping.planEndTime, true),
+        note: getValue(mapping.note)
+    };
+}
+
+// Xử lý dữ liệu Excel và cập nhật bảng
+function processExcelData(data) {
+    const hasHeader = document.getElementById('hasHeader').checked;
+    let startRow = hasHeader ? 1 : 0;
+    
+    let importedRows = 0;
+    let updatedRows = 0;
+    let errors = 0;
+    
+    const maxColumns = Math.max(...data.slice(startRow).map(row => row.length));
+    
+    if (maxColumns < 8) {
+        showNotification(`File chỉ có ${maxColumns} cột. Cần 8 cột theo đúng thứ tự!`, 'error');
+        return { importedRows: 0, updatedRows: 0, errors: 1, totalRows: 0 };
+    }
+    
+    const tableBody = document.getElementById('tableBody');
+    let currentRowIndex = 0;
+    const existingRows = Array.from(tableBody.querySelectorAll('.employee-row'));
+    
+    for (let i = startRow; i < data.length; i++) {
+        const row = data[i];
+        if (!row || row.length === 0) continue;
+        
+        try {
+            const employeeData = extractEmployeeData(row);
+            
+            if (!employeeData.empCode && !employeeData.fullName) continue;
+            
+            // Kiểm tra xem có hàng nào chưa đủ thông tin bắt buộc không
+            let foundIncompleteRow = false;
+            
+            for (let j = currentRowIndex; j < existingRows.length; j++) {
+                const existingRow = existingRows[j];
+                const rowEmpCode = existingRow.querySelector('input[name="empCode"]').value.trim();
+                const rowFullName = existingRow.querySelector('input[name="fullName"]').value.trim();
+                const rowJobTitle = existingRow.querySelector('input[name="jobTitle"]').value.trim();
+                const rowTask = existingRow.querySelector('input[name="task"]').value.trim();
+                
+                // Nếu hàng này chưa đủ thông tin bắt buộc, ghi đè lên
+                if (!rowEmpCode || !rowFullName || !rowJobTitle || !rowTask) {
+                    existingRow.querySelector('input[name="empCode"]').value = employeeData.empCode;
+                    existingRow.querySelector('input[name="fullName"]').value = employeeData.fullName;
+                    existingRow.querySelector('input[name="jobTitle"]').value = employeeData.jobTitle;
+                    existingRow.querySelector('input[name="task"]').value = employeeData.task;
+                    existingRow.querySelector('input[name="quantity"]').value = employeeData.quantity;
+                    existingRow.querySelector('input[name="planStartTime"]').value = employeeData.planStartTime;
+                    existingRow.querySelector('input[name="planEndTime"]').value = employeeData.planEndTime;
+                    existingRow.querySelector('input[name="note"]').value = employeeData.note;
                     
-                    if (!employeeData.empCode && !employeeData.fullName) continue;
-                    
-                    // Kiểm tra xem có hàng nào chưa đủ thông tin bắt buộc không
-                    let foundIncompleteRow = false;
-                    
-                    for (let j = currentRowIndex; j < existingRows.length; j++) {
-                        const existingRow = existingRows[j];
-                        const rowEmpCode = existingRow.querySelector('input[name="empCode"]').value.trim();
-                        const rowFullName = existingRow.querySelector('input[name="fullName"]').value.trim();
-                        const rowJobTitle = existingRow.querySelector('input[name="jobTitle"]').value.trim();
-                        const rowTask = existingRow.querySelector('input[name="task"]').value.trim();
-                        
-                        // Nếu hàng này chưa đủ thông tin bắt buộc, ghi đè lên
-                        if (!rowEmpCode || !rowFullName || !rowJobTitle || !rowTask) {
-                            existingRow.querySelector('input[name="empCode"]').value = employeeData.empCode;
-                            existingRow.querySelector('input[name="fullName"]').value = employeeData.fullName;
-                            existingRow.querySelector('input[name="jobTitle"]').value = employeeData.jobTitle;
-                            existingRow.querySelector('input[name="task"]').value = employeeData.task;
-                            existingRow.querySelector('input[name="quantity"]').value = employeeData.quantity;
-                            existingRow.querySelector('input[name="planStartTime"]').value = employeeData.planStartTime;
-                            existingRow.querySelector('input[name="planEndTime"]').value = employeeData.planEndTime;
-                            existingRow.querySelector('input[name="note"]').value = employeeData.note;
-                            
-                            updatedRows++;
-                            currentRowIndex = j + 1;
-                            foundIncompleteRow = true;
-                            break;
-                        }
-                    }
-                    
-                    // Nếu không tìm thấy hàng nào chưa đủ thông tin, thêm hàng mới
-                    if (!foundIncompleteRow) {
-                        addEmployeeToTable(employeeData);
-                        importedRows++;
-                    }
-                    
-                } catch (error) {
-                    console.error(`Lỗi khi xử lý dòng ${i + 1}:`, error, row);
-                    errors++;
+                    updatedRows++;
+                    currentRowIndex = j + 1;
+                    foundIncompleteRow = true;
+                    break;
                 }
             }
             
-            return {
-                importedRows,
-                updatedRows,
-                errors,
-                totalRows: data.length - startRow
-            };
-        }
-
-        // Import file Excel
-        function importExcelFile() {
-            const fileInput = document.getElementById('excelFileInput');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                showNotification('Vui lòng chọn file Excel để import!', 'error');
-                return;
+            // Nếu không tìm thấy hàng nào chưa đủ thông tin, thêm hàng mới
+            if (!foundIncompleteRow) {
+                addEmployeeToTable(employeeData);
+                importedRows++;
             }
-
-            const reader = new FileReader();
             
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    
-                    const workbook = XLSX.read(data, { 
-                        type: 'array', 
-                        cellDates: true,
-                        cellNF: false,
-                        raw: false
-                    });
-                    
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
-                        header: 1, 
-                        defval: ''
-                    });
-                    
-                    if (jsonData.length <= 1) {
-                        showNotification('File Excel không có dữ liệu!', 'error');
-                        return;
-                    }
-
-                    const result = processExcelData(jsonData);
-                    
-                    let message = '';
-                    if (result.updatedRows > 0 && result.importedRows > 0) {
-                        message = `Đã cập nhật ${result.updatedRows} hàng và thêm mới ${result.importedRows} nhân viên`;
-                    } else if (result.updatedRows > 0) {
-                        message = `Đã cập nhật ${result.updatedRows} hàng`;
-                    } else if (result.importedRows > 0) {
-                        message = `Đã import thành công ${result.importedRows} nhân viên`;
-                    } else {
-                        message = 'Không có dữ liệu nào được import';
-                    }
-                    
-                    showNotification(message, 'success');
-                    
-                    clearFileSelection();
-                    
-                } catch (error) {
-                    console.error('Lỗi khi đọc file Excel:', error);
-                    showNotification('Có lỗi xảy ra khi đọc file Excel!', 'error');
-                }
-            };
-            
-            reader.readAsArrayBuffer(file);
+        } catch (error) {
+            console.error(`Lỗi khi xử lý dòng ${i + 1}:`, error, row);
+            errors++;
         }
+    }
+    
+    return {
+        importedRows,
+        updatedRows,
+        errors,
+        totalRows: data.length - startRow
+    };
+}
 
-        // Mở modal thêm nhân viên
-        function openEmployeeModal() {
-            const modal = document.getElementById('employeeModal');
-            document.getElementById('employeeForm').reset();
+// Import file Excel
+function importExcelFile() {
+    const fileInput = document.getElementById('excelFileInput');
+    const file = selectedFile || fileInput.files[0];
+
+    if (!file) {
+        showNotification('Vui lòng chọn file Excel để import!', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
             
-            const inputs = modal.querySelectorAll('input, textarea');
-            inputs.forEach(input => input.classList.remove('error'));
-
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            
-            const defaultStartTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-            
-            const endTime = new Date(now.getTime() + 60 * 60 * 1000);
-            const endHours = endTime.getHours().toString().padStart(2, '0');
-            const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
-            const defaultEndTime = `${year}-${month}-${day}T${endHours}:${endMinutes}`;
-
-            document.getElementById('modal_planStartTime').value = defaultStartTime;
-            document.getElementById('modal_planEndTime').value = defaultEndTime;
-
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Đóng modal thêm nhân viên
-        function closeEmployeeModal() {
-            const modal = document.getElementById('employeeModal');
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Validate form nhân viên
-        function validateEmployeeForm() {
-            let isValid = true;
-            const requiredFields = [
-                'modal_empCode', 
-                'modal_fullName', 
-                'modal_jobTitle', 
-                'modal_task',
-                'modal_planStartTime',
-                'modal_planEndTime'
-            ];
-
-            requiredFields.forEach(fieldId => {
-                const input = document.getElementById(fieldId);
-                if (!input.value.trim()) {
-                    input.classList.add('error');
-                    isValid = false;
-                } else {
-                    input.classList.remove('error');
-                }
+            const workbook = XLSX.read(data, { 
+                type: 'array', 
+                cellDates: true,
+                cellNF: false,
+                raw: false
             });
-
-            return isValid;
-        }
-
-        // Gửi form thêm nhân viên
-        function submitEmployeeForm() {
-            if (!validateEmployeeForm()) {
-                showNotification('Vui lòng điền đầy đủ các trường bắt buộc!', 'error');
+            
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
+                header: 1, 
+                defval: ''
+            });
+            
+            if (jsonData.length <= 1) {
+                showNotification('File Excel không có dữ liệu!', 'error');
                 return;
             }
 
-            const formData = {
-                empCode: document.getElementById('modal_empCode').value,
-                fullName: document.getElementById('modal_fullName').value,
-                jobTitle: document.getElementById('modal_jobTitle').value,
-                task: document.getElementById('modal_task').value,
-                quantity: document.getElementById('modal_quantity').value,
-                planStartTime: document.getElementById('modal_planStartTime').value,
-                planEndTime: document.getElementById('modal_planEndTime').value,
-                note: document.getElementById('modal_note').value
-            };
-
-            // Kiểm tra hàng cuối cùng có đầy đủ thông tin bắt buộc chưa
-            const tableBody = document.getElementById('tableBody');
-            const lastRow = tableBody.lastElementChild;
+            const result = processExcelData(jsonData);
             
-            if (lastRow) {
-                const lastRowEmpCode = lastRow.querySelector('input[name="empCode"]').value.trim();
-                const lastRowFullName = lastRow.querySelector('input[name="fullName"]').value.trim();
-                const lastRowJobTitle = lastRow.querySelector('input[name="jobTitle"]').value.trim();
-                const lastRowTask = lastRow.querySelector('input[name="task"]').value.trim();
-                
-                // Nếu hàng cuối chưa đầy đủ thông tin bắt buộc, ghi đè lên
-                if (!lastRowEmpCode || !lastRowFullName || !lastRowJobTitle || !lastRowTask) {
-                    lastRow.querySelector('input[name="empCode"]').value = formData.empCode;
-                    lastRow.querySelector('input[name="fullName"]').value = formData.fullName;
-                    lastRow.querySelector('input[name="jobTitle"]').value = formData.jobTitle;
-                    lastRow.querySelector('input[name="task"]').value = formData.task;
-                    lastRow.querySelector('input[name="quantity"]').value = formData.quantity;
-                    lastRow.querySelector('input[name="planStartTime"]').value = formData.planStartTime;
-                    lastRow.querySelector('input[name="planEndTime"]').value = formData.planEndTime;
-                    lastRow.querySelector('input[name="note"]').value = formData.note;
-                    
-                    closeEmployeeModal();
-                    
-                    // Show success notification with SweetAlert2
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cập nhật thành công!',
-                        text: `Đã cập nhật thông tin nhân viên: ${formData.fullName}`,
-                        timer: 2000,
-                        showConfirmButton: false,
-                        toast: true,
-                        position: 'top-end'
-                    });
-                    
-                    return;
-                }
+            let message = '';
+            if (result.updatedRows > 0 && result.importedRows > 0) {
+                message = `Đã cập nhật ${result.updatedRows} hàng và thêm mới ${result.importedRows} nhân viên`;
+            } else if (result.updatedRows > 0) {
+                message = `Đã cập nhật ${result.updatedRows} hàng`;
+            } else if (result.importedRows > 0) {
+                message = `Đã import thành công ${result.importedRows} nhân viên`;
+            } else {
+                message = 'Không có dữ liệu nào được import';
             }
             
-            // Nếu hàng cuối đã đầy đủ thông tin, thêm hàng mới
-            addEmployeeToTable(formData);
+            showNotification(message, 'success');
+            
+            clearFileSelection();
+            
+        } catch (error) {
+            console.error('Lỗi khi đọc file Excel:', error);
+            showNotification('Có lỗi xảy ra khi đọc file Excel!', 'error');
+        }
+    };
+    
+    reader.readAsArrayBuffer(file);
+}
+
+// Mở modal thêm nhân viên
+function openEmployeeModal() {
+    const modal = document.getElementById('employeeModal');
+    document.getElementById('employeeForm').reset();
+    
+    const inputs = modal.querySelectorAll('input, textarea');
+    inputs.forEach(input => input.classList.remove('error'));
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    
+    const defaultStartTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    
+    const endTime = new Date(now.getTime() + 60 * 60 * 1000);
+    const endHours = endTime.getHours().toString().padStart(2, '0');
+    const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
+    const defaultEndTime = `${year}-${month}-${day}T${endHours}:${endMinutes}`;
+
+    document.getElementById('modal_planStartTime').value = defaultStartTime;
+    document.getElementById('modal_planEndTime').value = defaultEndTime;
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// Đóng modal thêm nhân viên
+function closeEmployeeModal() {
+    const modal = document.getElementById('employeeModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Validate form nhân viên
+function validateEmployeeForm() {
+    let isValid = true;
+    const requiredFields = [
+        'modal_empCode', 
+        'modal_fullName', 
+        'modal_jobTitle', 
+        'modal_task',
+        'modal_planStartTime',
+        'modal_planEndTime'
+    ];
+
+    requiredFields.forEach(fieldId => {
+        const input = document.getElementById(fieldId);
+        if (!input.value.trim()) {
+            input.classList.add('error');
+            isValid = false;
+        } else {
+            input.classList.remove('error');
+        }
+    });
+
+    return isValid;
+}
+
+// Gửi form thêm nhân viên
+function submitEmployeeForm() {
+    if (!validateEmployeeForm()) {
+        showNotification('Vui lòng điền đầy đủ các trường bắt buộc!', 'error');
+        return;
+    }
+
+    const formData = {
+        empCode: document.getElementById('modal_empCode').value,
+        fullName: document.getElementById('modal_fullName').value,
+        jobTitle: document.getElementById('modal_jobTitle').value,
+        task: document.getElementById('modal_task').value,
+        quantity: document.getElementById('modal_quantity').value,
+        planStartTime: document.getElementById('modal_planStartTime').value,
+        planEndTime: document.getElementById('modal_planEndTime').value,
+        note: document.getElementById('modal_note').value
+    };
+
+    // Kiểm tra hàng cuối cùng có đầy đủ thông tin bắt buộc chưa
+    const tableBody = document.getElementById('tableBody');
+    const lastRow = tableBody.lastElementChild;
+    
+    if (lastRow) {
+        const lastRowEmpCode = lastRow.querySelector('input[name="empCode"]').value.trim();
+        const lastRowFullName = lastRow.querySelector('input[name="fullName"]').value.trim();
+        const lastRowJobTitle = lastRow.querySelector('input[name="jobTitle"]').value.trim();
+        const lastRowTask = lastRow.querySelector('input[name="task"]').value.trim();
+        
+        // Nếu hàng cuối chưa đầy đủ thông tin bắt buộc, ghi đè lên
+        if (!lastRowEmpCode || !lastRowFullName || !lastRowJobTitle || !lastRowTask) {
+            lastRow.querySelector('input[name="empCode"]').value = formData.empCode;
+            lastRow.querySelector('input[name="fullName"]').value = formData.fullName;
+            lastRow.querySelector('input[name="jobTitle"]').value = formData.jobTitle;
+            lastRow.querySelector('input[name="task"]').value = formData.task;
+            lastRow.querySelector('input[name="quantity"]').value = formData.quantity;
+            lastRow.querySelector('input[name="planStartTime"]').value = formData.planStartTime;
+            lastRow.querySelector('input[name="planEndTime"]').value = formData.planEndTime;
+            lastRow.querySelector('input[name="note"]').value = formData.note;
+            
             closeEmployeeModal();
             
-            // Show success notification with SweetAlert2
             Swal.fire({
                 icon: 'success',
-                title: 'Thêm thành công!',
-                text: `Đã thêm nhân viên: ${formData.fullName}`,
+                title: 'Cập nhật thành công!',
+                text: `Đã cập nhật thông tin nhân viên: ${formData.fullName}`,
                 timer: 2000,
                 showConfirmButton: false,
                 toast: true,
                 position: 'top-end'
             });
-        }
-
-        // Thêm nhân viên vào bảng
-        function addEmployeeToTable(data = null) {
-            employeeCounter++;
-            const tableBody = document.getElementById('tableBody');
-
-            if (!data) {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = (now.getMonth() + 1).toString().padStart(2, '0');
-                const day = now.getDate().toString().padStart(2, '0');
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                
-                const defaultStartTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-                
-                const endTime = new Date(now.getTime() + 60 * 60 * 1000);
-                const endHours = endTime.getHours().toString().padStart(2, '0');
-                const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
-                const defaultEndTime = `${year}-${month}-${day}T${endHours}:${endMinutes}`;
-
-                data = {
-                    empCode: '',
-                    fullName: '',
-                    jobTitle: '',
-                    task: '',
-                    quantity: '',
-                    planStartTime: defaultStartTime,
-                    planEndTime: defaultEndTime,
-                    note: ''
-                };
-            }
-
-            const employeeRow = document.createElement('tr');
-            employeeRow.className = 'employee-row';
-            employeeRow.innerHTML = `
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm table-action-btn" onclick="confirmDeleteEmployee(this)" title="Xóa nhân viên">
-                        <i class="fas fa-trash"></i>
-                        <span class="btn-text">Xóa</span>
-                    </button>
-                </td>
-                <td>${employeeCounter}</td>
-                <td><input type="text" placeholder="MSNV" name="empCode" value="${data.empCode}"></td>
-                <td><input type="text" placeholder="Họ và tên" name="fullName" value="${data.fullName}"></td>
-                <td><input type="text" placeholder="Chức danh" name="jobTitle" value="${data.jobTitle}"></td>
-                <td><input type="text" placeholder="Công việc" name="task" value="${data.task}"></td>
-                <td><input type="text" placeholder="Sản lượng" name="quantity" value="${data.quantity}"></td>
-                <td><input type="datetime-local" name="planStartTime" value="${data.planStartTime}"></td>
-                <td><input type="datetime-local" name="planEndTime" value="${data.planEndTime}"></td>
-                <td><input type="text" placeholder="Ghi chú" name="note" value="${data.note}"></td>
-            `;
-
-            tableBody.appendChild(employeeRow);
-        }
-
-        // Xác nhận xóa nhân viên
-        function confirmDeleteEmployee(button) {
-            const row = button.closest('tr');
             
-            const empCode = row.querySelector('input[name="empCode"]').value;
-            const fullName = row.querySelector('input[name="fullName"]').value;
-            const jobTitle = row.querySelector('input[name="jobTitle"]').value;
-            const task = row.querySelector('input[name="task"]').value;
-            const quantity = row.querySelector('input[name="quantity"]').value;
-            const planStartTime = row.querySelector('input[name="planStartTime"]').value;
-            const planEndTime = row.querySelector('input[name="planEndTime"]').value;
-            const note = row.querySelector('input[name="note"]').value;
-            
-            const formatDateTime = (datetimeStr) => {
-                if (!datetimeStr) return 'Chưa nhập';
-                const date = new Date(datetimeStr);
-                return date.toLocaleString('vi-VN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            };
-
-            Swal.fire({
-                title: 'Xác nhận xóa nhân viên',
-                html: `
-                    <div style="text-align: left; max-height: 400px; overflow-y: auto;">
-                        <p><strong>Bạn có chắc chắn muốn xóa nhân viên này?</strong></p>
-                        <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-id-card"></i> MSNV:</strong> ${empCode || 'Chưa nhập'}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-user"></i> Họ và tên:</strong> ${fullName || 'Chưa nhập'}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-briefcase"></i> Chức danh:</strong> ${jobTitle || 'Chưa nhập'}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-tasks"></i> Công việc:</strong> ${task || 'Chưa nhập'}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-chart-bar"></i> Sản lượng:</strong> ${quantity || 'Chưa nhập'}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-clock"></i> Thời gian bắt đầu:</strong> ${formatDateTime(planStartTime)}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-clock"></i> Thời gian kết thúc:</strong> ${formatDateTime(planEndTime)}</p>
-                            <p style="margin: 0.5rem 0;"><strong><i class="fas fa-sticky-note"></i> Ghi chú:</strong> ${note || 'Không có'}</p>
-                        </div>
-                    </div>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: '<i class="fas fa-trash"></i> Xóa',
-                cancelButtonText: '<i class="fas fa-times"></i> Hủy',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteEmployee(row);
-                }
-            });
+            return;
         }
+    }
+    
+    // Nếu hàng cuối đã đầy đủ thông tin, thêm hàng mới
+    addEmployeeToTable(formData);
+    closeEmployeeModal();
+    
+    Swal.fire({
+        icon: 'success',
+        title: 'Thêm thành công!',
+        text: `Đã thêm nhân viên: ${formData.fullName}`,
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+    });
+}
 
-        // Xóa nhân viên khỏi bảng
-        function deleteEmployee(row) {
-            const tableBody = document.getElementById('tableBody');
+// Thêm nhân viên vào bảng
+function addEmployeeToTable(data = null) {
+    employeeCounter++;
+    const tableBody = document.getElementById('tableBody');
 
-            if (tableBody.children.length > 1) {
-                row.remove();
-                updateEmployeeNumbers();
-                
-                Swal.fire({
-                    title: 'Đã xóa!',
-                    text: 'Nhân viên đã được xóa thành công.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            } else {
-                Swal.fire({
-                    title: 'Không thể xóa',
-                    text: 'Cần ít nhất một nhân viên trong bảng',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
+    if (!data) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        
+        const defaultStartTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        const endTime = new Date(now.getTime() + 60 * 60 * 1000);
+        const endHours = endTime.getHours().toString().padStart(2, '0');
+        const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
+        const defaultEndTime = `${year}-${month}-${day}T${endHours}:${endMinutes}`;
+
+        data = {
+            empCode: '',
+            fullName: '',
+            jobTitle: '',
+            task: '',
+            quantity: '',
+            planStartTime: defaultStartTime,
+            planEndTime: defaultEndTime,
+            note: ''
+        };
+    }
+
+    const employeeRow = document.createElement('tr');
+    employeeRow.className = 'employee-row';
+    employeeRow.innerHTML = `
+        <td>
+            <button type="button" class="btn btn-danger btn-sm table-action-btn" onclick="confirmDeleteEmployee(this)" title="Xóa nhân viên">
+                <i class="fas fa-trash"></i>
+                <span class="btn-text">Xóa</span>
+            </button>
+        </td>
+        <td>${employeeCounter}</td>
+        <td><input type="text" placeholder="MSNV" name="empCode" value="${data.empCode}"></td>
+        <td><input type="text" placeholder="Họ và tên" name="fullName" value="${data.fullName}"></td>
+        <td><input type="text" placeholder="Chức danh" name="jobTitle" value="${data.jobTitle}"></td>
+        <td><input type="text" placeholder="Công việc" name="task" value="${data.task}"></td>
+        <td><input type="text" placeholder="Sản lượng" name="quantity" value="${data.quantity}"></td>
+        <td><input type="datetime-local" name="planStartTime" value="${data.planStartTime}"></td>
+        <td><input type="datetime-local" name="planEndTime" value="${data.planEndTime}"></td>
+        <td><input type="text" placeholder="Ghi chú" name="note" value="${data.note}"></td>
+    `;
+
+    tableBody.appendChild(employeeRow);
+}
+
+// Xác nhận xóa nhân viên
+function confirmDeleteEmployee(button) {
+    const row = button.closest('tr');
+    
+    const empCode = row.querySelector('input[name="empCode"]').value;
+    const fullName = row.querySelector('input[name="fullName"]').value;
+    const jobTitle = row.querySelector('input[name="jobTitle"]').value;
+    const task = row.querySelector('input[name="task"]').value;
+    const quantity = row.querySelector('input[name="quantity"]').value;
+    const planStartTime = row.querySelector('input[name="planStartTime"]').value;
+    const planEndTime = row.querySelector('input[name="planEndTime"]').value;
+    const note = row.querySelector('input[name="note"]').value;
+    
+    const formatDateTime = (datetimeStr) => {
+        if (!datetimeStr) return 'Chưa nhập';
+        const date = new Date(datetimeStr);
+        return date.toLocaleString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    Swal.fire({
+        title: 'Xác nhận xóa nhân viên',
+        html: `
+            <div style="text-align: left; max-height: 400px; overflow-y: auto;">
+                <p><strong>Bạn có chắc chắn muốn xóa nhân viên này?</strong></p>
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-id-card"></i> MSNV:</strong> ${empCode || 'Chưa nhập'}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-user"></i> Họ và tên:</strong> ${fullName || 'Chưa nhập'}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-briefcase"></i> Chức danh:</strong> ${jobTitle || 'Chưa nhập'}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-tasks"></i> Công việc:</strong> ${task || 'Chưa nhập'}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-chart-bar"></i> Sản lượng:</strong> ${quantity || 'Chưa nhập'}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-clock"></i> Thời gian bắt đầu:</strong> ${formatDateTime(planStartTime)}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-clock"></i> Thời gian kết thúc:</strong> ${formatDateTime(planEndTime)}</p>
+                    <p style="margin: 0.5rem 0;"><strong><i class="fas fa-sticky-note"></i> Ghi chú:</strong> ${note || 'Không có'}</p>
+                </div>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '<i class="fas fa-trash"></i> Xóa',
+        cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteEmployee(row);
         }
+    });
+}
 
-        // Cập nhật số thứ tự nhân viên
-        function updateEmployeeNumbers() {
-            const tableBody = document.getElementById('tableBody');
-            const rows = tableBody.getElementsByClassName('employee-row');
-            
-            for (let i = 0; i < rows.length; i++) {
-                rows[i].querySelector('td:nth-child(2)').textContent = i + 1;
-            }
-            
-            employeeCounter = rows.length;
+// Xóa nhân viên khỏi bảng
+function deleteEmployee(row) {
+    const tableBody = document.getElementById('tableBody');
+
+    if (tableBody.children.length > 1) {
+        row.remove();
+        updateEmployeeNumbers();
+        
+        Swal.fire({
+            title: 'Đã xóa!',
+            text: 'Nhân viên đã được xóa thành công.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } else {
+        Swal.fire({
+            title: 'Không thể xóa',
+            text: 'Cần ít nhất một nhân viên trong bảng',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
+// Cập nhật số thứ tự nhân viên
+function updateEmployeeNumbers() {
+    const tableBody = document.getElementById('tableBody');
+    const rows = tableBody.getElementsByClassName('employee-row');
+    
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].querySelector('td:nth-child(2)').textContent = i + 1;
+    }
+    
+    employeeCounter = rows.length;
+}
+
+// Tìm kiếm
+function searchTable() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toUpperCase();
+    const tableBody = document.getElementById('tableBody');
+    const rows = tableBody.getElementsByClassName('employee-row');
+
+    for (let row of rows) {
+        row.classList.remove('highlight-row');
+        row.style.display = '';
+    }
+
+    if (filter.trim() === '') return;
+
+    let found = false;
+    for (let row of rows) {
+        const inputs = row.querySelectorAll('input[type="text"]');
+        let rowText = '';
+        
+        inputs.forEach(input => {
+            rowText += input.value.toUpperCase() + ' ';
+        });
+
+        if (rowText.indexOf(filter) > -1) {
+            row.classList.add('highlight-row');
+            found = true;
+        } else {
+            row.style.display = 'none';
         }
+    }
 
-        // Tìm kiếm
-        function searchTable() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toUpperCase();
-            const tableBody = document.getElementById('tableBody');
-            const rows = tableBody.getElementsByClassName('employee-row');
-
-            for (let row of rows) {
-                row.classList.remove('highlight-row');
-                row.style.display = '';
-            }
-
-            if (filter.trim() === '') return;
-
-            let found = false;
-            for (let row of rows) {
-                const inputs = row.querySelectorAll('input[type="text"]');
-                let rowText = '';
-                
-                inputs.forEach(input => {
-                    rowText += input.value.toUpperCase() + ' ';
-                });
-
-                if (rowText.indexOf(filter) > -1) {
-                    row.classList.add('highlight-row');
-                    found = true;
-                } else {
-                    row.style.display = 'none';
-                }
-            }
-
-            if (found) {
-                const firstHighlight = tableBody.querySelector('.highlight-row');
-                if (firstHighlight) {
-                    firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
+    if (found) {
+        const firstHighlight = tableBody.querySelector('.highlight-row');
+        if (firstHighlight) {
+            firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+    }
+}
 
-        // Thông báo
-        function showNotification(message, type = 'success') {
-            const oldNotification = document.querySelector('.notification');
-            if (oldNotification) oldNotification.remove();
+// Thông báo
+function showNotification(message, type = 'success') {
+    const oldNotification = document.querySelector('.notification');
+    if (oldNotification) oldNotification.remove();
 
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
 
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => {
-                        if (notification.parentNode) notification.remove();
-                    }, 300);
-                }
-            }, 3000);
+                if (notification.parentNode) notification.remove();
+            }, 300);
         }
+    }, 3000);
+}
 
-        // Reset
-        function resetForm() {
-            Swal.fire({
-                title: 'Xác nhận làm lại',
-                text: 'Bạn có chắc chắn muốn làm lại? Tất cả thông tin đã nhập sẽ bị xóa.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f59e0b',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: '<i class="fas fa-redo-alt"></i> Làm lại',
-                cancelButtonText: '<i class="fas fa-times"></i> Hủy',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const tableBody = document.getElementById('tableBody');
-                    tableBody.innerHTML = '';
+// Reset
+function resetForm() {
+    Swal.fire({
+        title: 'Xác nhận làm lại',
+        text: 'Bạn có chắc chắn muốn làm lại? Tất cả thông tin đã nhập sẽ bị xóa.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '<i class="fas fa-redo-alt"></i> Làm lại',
+        cancelButtonText: '<i class="fas fa-times"></i> Hủy',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
 
-                    document.getElementById('searchInput').value = '';
-                    clearFileSelection();
+            document.getElementById('searchInput').value = '';
+            clearFileSelection();
 
-                    employeeCounter = 0;
-                    addEmployeeToTable();
-
-                    Swal.fire({
-                        title: 'Đã làm lại!',
-                        text: 'Biểu mẫu đã được làm lại thành công.',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                }
-            });
-        }
-
-        // Sự kiện khi tài liệu đã tải xong
-        document.addEventListener('DOMContentLoaded', function() {
+            employeeCounter = 0;
             addEmployeeToTable();
 
-            window.onclick = function(event) {
-                const modal = document.getElementById('employeeModal');
-                if (event.target == modal) {
-                    closeEmployeeModal();
-                }
-            };
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeEmployeeModal();
-                }
+            Swal.fire({
+                title: 'Đã làm lại!',
+                text: 'Biểu mẫu đã được làm lại thành công.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
             });
+        }
+    });
+}
 
-            // Drag and Drop functionality
-            const fileUploadArea = document.getElementById('fileUploadArea');
+// Sự kiện khi tài liệu đã tải xong
+document.addEventListener('DOMContentLoaded', function() {
+    addEmployeeToTable();
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('employeeModal');
+        if (event.target == modal) {
+            closeEmployeeModal();
+        }
+    };
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeEmployeeModal();
+        }
+    });
+
+    // Drag and Drop functionality
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileUploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileUploadArea.addEventListener(eventName, () => {
+            fileUploadArea.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileUploadArea.addEventListener(eventName, () => {
+            fileUploadArea.classList.remove('dragover');
+        }, false);
+    });
+
+    fileUploadArea.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            const file = files[0];
+            const fileInput = document.getElementById('excelFileInput');
             
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, () => {
-                    fileUploadArea.classList.add('dragover');
-                }, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                fileUploadArea.addEventListener(eventName, () => {
-                    fileUploadArea.classList.remove('dragover');
-                }, false);
-            });
-
-            fileUploadArea.addEventListener('drop', (e) => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
+            // Check file type
+            if (file.name.match(/\.(xlsx|xls|csv)$/i)) {
+                // Lưu file vào biến selectedFile
+                selectedFile = file;
                 
-                if (files.length > 0) {
-                    const file = files[0];
-                    const fileInput = document.getElementById('excelFileInput');
-                    
-                    // Check file type
-                    if (file.name.match(/\.(xlsx|xls|csv)$/i)) {
-                        // Create a new FileList-like object
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        fileInput.files = dataTransfer.files;
-                        
-                        displayFileName(file.name);
-                        document.getElementById('uploadBtn').disabled = false;
-                    } else {
-                        showNotification('Vui lòng chọn file Excel (.xlsx, .xls, .csv)', 'error');
-                    }
-                }
-            });
-        });
+                // Create a new FileList-like object
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                
+                displayFileName(file.name);
+                document.getElementById('uploadBtn').disabled = false;
+            } else {
+                showNotification('Vui lòng chọn file Excel (.xlsx, .xls, .csv)', 'error');
+            }
+        }
+    });
+});
     </script>
 </body>
 </html>
