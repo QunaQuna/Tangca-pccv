@@ -216,6 +216,112 @@
             display: block;
         }
         
+        /* Custom styles for Select2 */
+        .select-with-icon .select2-container {
+            width: 100% !important;
+        }
+        
+        .select-with-icon .select2-container--default .select2-selection--single {
+            border: 1px solid #d1d9e6;
+            border-radius: 6px;
+            height: 42px;
+            padding: 4px 0;
+        }
+        
+        .select-with-icon .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 32px;
+            padding-left: 12px;
+            padding-right: 70px;
+            color: #333;
+        }
+        
+        .select-with-icon .select2-container--default .select2-selection--single .select2-selection__arrow {
+            display: none;
+        }
+        
+        .select-with-icon .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+        
+        .select-with-icon .clear-btn {
+            display: none;
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            z-index: 10;
+        }
+        
+        .select-with-icon .field-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            pointer-events: none;
+            font-size: 14px;
+            z-index: 5;
+        }
+        
+        .select-with-icon.has-value .clear-btn {
+            display: block;
+        }
+        
+        .select2-container {
+            width: 100% !important;
+        }
+        
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #d1d9e6;
+            border-radius: 6px;
+            height: 42px;
+            padding: 4px 0;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 32px;
+            padding-left: 12px;
+            color: #333;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+            right: 10px;
+        }
+        
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+        
+        .select2-dropdown {
+            border: 1px solid #d1d9e6;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid #d1d9e6;
+            border-radius: 4px;
+            padding: 8px;
+        }
+        
+        .select2-search--dropdown .select2-search__field:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+        
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: #1a73e8 !important;
+        }
+        
         .employee-avatar {
             width: 100px;
             height: 100px;
@@ -741,17 +847,17 @@
                     Nhân viên
                 </label>
                 <div class="select-with-icon">
-                    <select id="employeeSelect" required>
+                    <select id="employeeSelect" class="select2" required>
                         <option value="" selected disabled>Chọn nhân viên...</option>
                         <option value="02170073" data-avatar="https://i.pravatar.cc/150?img=12">02170073 -- Trần Quốc Lợi -- Trường ca Giao nhận -- CNBX</option>
                         <option value="02170074" data-avatar="https://i.pravatar.cc/150?img=33">02170074 -- Nguyễn Văn A -- Kho hàng -- CNBX</option>
                         <option value="02170075" data-avatar="https://i.pravatar.cc/150?img=45">02170075 -- Lê Thị B -- Vận chuyển -- CNBX</option>
                     </select>
-                    <button type="button" class="clear-btn" onclick="clearSelect('employeeSelect')">
+                    <button type="button" class="clear-btn" onclick="clearSelect2('employeeSelect')">
                         <i class="fas fa-times"></i>
                     </button>
-                    <span class="dropdown-icon">
-                        <i class="fas fa-chevron-down"></i>
+                    <span class="field-icon">
+                        <i class="fas fa-user"></i>
                     </span>
                 </div>
             </div>
@@ -765,13 +871,13 @@
                         <i class="fas fa-ship"></i>
                         Tên tàu xe
                     </label>
-                    <div class="input-with-icon">
-                        <select id="shipName" required>
+                    <div class="select-with-icon">
+                        <select id="shipName" class="select2" required>
                             <option value="" selected disabled>Chọn tàu xe...</option>
                             <option value="Cnc Padma">Cnc Padma</option>
                             <option value="Vinalines">Vinalines</option>
                         </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('shipName')">
+                        <button type="button" class="clear-btn" onclick="clearSelect2('shipName')">
                             <i class="fas fa-times"></i>
                         </button>
                         <span class="field-icon">
@@ -785,13 +891,13 @@
                         <i class="fas fa-warehouse"></i>
                         Nơi làm
                     </label>
-                    <div class="input-with-icon">
-                        <select id="workPlace" required>
+                    <div class="select-with-icon">
+                        <select id="workPlace" class="select2" required>
                             <option value="" selected disabled>Chọn nơi làm...</option>
                             <option value="Kho hàng 17">Kho hàng 17</option>
                             <option value="Kho hàng 18">Kho hàng 18</option>
                         </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('workPlace')">
+                        <button type="button" class="clear-btn" onclick="clearSelect2('workPlace')">
                             <i class="fas fa-times"></i>
                         </button>
                         <span class="field-icon">
@@ -805,13 +911,13 @@
                         <i class="fas fa-box"></i>
                         Tên hàng
                     </label>
-                    <div class="input-with-icon">
-                        <select id="productName" required>
+                    <div class="select-with-icon">
+                        <select id="productName" class="select2" required>
                             <option value="" selected disabled>Chọn tên hàng...</option>
                             <option value="Bã đậu nành">Bã đậu nành</option>
                             <option value="Gạo">Gạo</option>
                         </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('productName')">
+                        <button type="button" class="clear-btn" onclick="clearSelect2('productName')">
                             <i class="fas fa-times"></i>
                         </button>
                         <span class="field-icon">
@@ -825,13 +931,13 @@
                         <i class="fas fa-briefcase"></i>
                         Công việc
                     </label>
-                    <div class="input-with-icon">
-                        <select id="jobType" required>
+                    <div class="select-with-icon">
+                        <select id="jobType" class="select2" required>
                             <option value="" selected disabled>Chọn công việc...</option>
                             <option value="CNBX">CNBX</option>
                             <option value="Vận chuyển">Vận chuyển</option>
                         </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('jobType')">
+                        <button type="button" class="clear-btn" onclick="clearSelect2('jobType')">
                             <i class="fas fa-times"></i>
                         </button>
                         <span class="field-icon">
@@ -845,13 +951,13 @@
                         <i class="fas fa-clipboard-list"></i>
                         Phương án
                     </label>
-                    <div class="input-with-icon">
-                        <select id="plan" required>
+                    <div class="select-with-icon">
+                        <select id="plan" class="select2" required>
                             <option value="" selected disabled>Chọn phương án...</option>
                             <option value="PA0338--Tàu <-> Phễu xá thắng <-> Ô tô VC">PA0338--Tàu <-> Phễu xá thắng <-> Ô tô VC</option>
                             <option value="PA0339--Tàu <-> Kho <-> Xe tải">PA0339--Tàu <-> Kho <-> Xe tải</option>
                         </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('plan')">
+                        <button type="button" class="clear-btn" onclick="clearSelect2('plan')">
                             <i class="fas fa-times"></i>
                         </button>
                         <span class="field-icon">
@@ -865,13 +971,13 @@
                         <i class="fas fa-truck"></i>
                         Phương tiện
                     </label>
-                    <div class="input-with-icon">
-                        <select id="vehicle" required>
+                    <div class="select-with-icon">
+                        <select id="vehicle" class="select2" required>
                             <option value="" selected disabled>Chọn phương tiện...</option>
                             <option value="IHI-01">IHI-01</option>
                             <option value="IHI-02">IHI-02</option>
                         </select>
-                        <button type="button" class="clear-btn" onclick="clearSelect('vehicle')">
+                        <button type="button" class="clear-btn" onclick="clearSelect2('vehicle')">
                             <i class="fas fa-times"></i>
                         </button>
                         <span class="field-icon">
@@ -888,11 +994,6 @@
                     <div class="employee-avatar-placeholder" id="employeeAvatarPlaceholder" style="display: none;">
                         <i class="fas fa-user"></i>
                     </div>
-                </div>
-                <div class="employee-info">
-                    <div class="employee-name" id="employeeName">Trần Quốc Lợi</div>
-                    <div class="employee-id" id="employeeId">02170073</div>
-                    <div class="employee-department">Trường ca Giao nhận - CNBX</div>
                 </div>
             </div>
         </div>
@@ -1048,11 +1149,13 @@
                         <label for="outputQuantity">Sản lượng</label>
                     </div>
                     <div class="output-combo">
-                        <select id="quantityType">
-                            <option value="Container">Container</option>
-                            <option value="Tấn">Tấn</option>
-                            <option value="Kiện">Kiện</option>
-                        </select>
+                        <div style="flex: 1; position: relative;">
+                            <select id="quantityType" class="select2">
+                                <option value="Container">Container</option>
+                                <option value="Tấn">Tấn</option>
+                                <option value="Kiện">Kiện</option>
+                            </select>
+                        </div>
                         <input type="number" id="quantityValue" value="3" min="0">
                     </div>
                 </div>
@@ -1063,11 +1166,13 @@
                         <label for="outputTime">Thời gian</label>
                     </div>
                     <div class="output-combo">
-                        <select id="timeType">
-                            <option value="Báo trì, báo dưỡng thiết bị">Báo trì, báo dưỡng thiết bị</option>
-                            <option value="Sửa chữa">Sửa chữa</option>
-                            <option value="Kiểm tra">Kiểm tra</option>
-                        </select>
+                        <div style="flex: 1; position: relative;">
+                            <select id="timeType" class="select2">
+                                <option value="Báo trì, báo dưỡng thiết bị">Báo trì, báo dưỡng thiết bị</option>
+                                <option value="Sửa chữa">Sửa chữa</option>
+                                <option value="Kiểm tra">Kiểm tra</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1089,6 +1194,8 @@
         </div>
     </div>
     
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Select2 JS -->
@@ -1097,6 +1204,66 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
     <script>
+        // Khởi tạo Select2 cho tất cả các select
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: function() {
+                    return $(this).find('option:first').text();
+                },
+                allowClear: false,
+                language: {
+                    noResults: function() {
+                        return "Không tìm thấy kết quả";
+                    },
+                    searching: function() {
+                        return "Đang tìm kiếm...";
+                    }
+                }
+            });
+            
+            // Update clear button visibility on select change
+            $('.select2').on('change', function() {
+                const wrapper = $(this).closest('.select-with-icon');
+                if ($(this).val()) {
+                    wrapper.addClass('has-value');
+                } else {
+                    wrapper.removeClass('has-value');
+                }
+            });
+            
+            // Thiết lập giá trị mặc định
+            $('#employeeSelect').val('02170073').trigger('change');
+            $('#shipName').val('Cnc Padma').trigger('change');
+            $('#workPlace').val('Kho hàng 17').trigger('change');
+            $('#productName').val('Bã đậu nành').trigger('change');
+            $('#jobType').val('CNBX').trigger('change');
+            $('#plan').val('PA0338--Tàu <-> Phễu xá thắng <-> Ô tô VC').trigger('change');
+            $('#vehicle').val('IHI-01').trigger('change');
+            $('#quantityType').val('Container').trigger('change');
+            $('#timeType').val('Báo trì, báo dưỡng thiết bị').trigger('change');
+            
+            // Cập nhật thông tin nhân viên khi thay đổi
+            $('#employeeSelect').on('change', function() {
+                updateEmployeeInfo();
+            });
+            
+            // Cập nhật thông tin nhân viên ban đầu
+            updateEmployeeInfo();
+        });
+        
+        // Hàm xóa lựa chọn select2
+        function clearSelect2(selectId) {
+            $('#' + selectId).val('').trigger('change');
+            
+            if (selectId === 'employeeSelect') {
+                const avatarImg = document.getElementById('employeeAvatarImg');
+                const avatarPlaceholder = document.getElementById('employeeAvatarPlaceholder');
+                
+                avatarImg.style.display = 'none';
+                avatarPlaceholder.style.display = 'flex';
+            }
+        }
+        
         // Khởi tạo Flatpickr cho các trường ngày giờ
         flatpickr("#startDate", {
             dateFormat: "d/m/Y",
@@ -1135,15 +1302,9 @@
             const select = document.getElementById('employeeSelect');
             const selectedOption = select.options[select.selectedIndex];
             const value = selectedOption.value;
-            const text = selectedOption.text;
             const avatarUrl = selectedOption.getAttribute('data-avatar');
             
             if (value) {
-                // Lấy thông tin từ text option (format: "ID -- Tên -- Bộ phận -- Chức vụ")
-                const parts = text.split(' -- ');
-                const id = parts[0];
-                const name = parts[1];
-                
                 // Cập nhật avatar
                 const avatarImg = document.getElementById('employeeAvatarImg');
                 const avatarPlaceholder = document.getElementById('employeeAvatarPlaceholder');
@@ -1162,10 +1323,6 @@
                     avatarImg.style.display = 'none';
                     avatarPlaceholder.style.display = 'flex';
                 }
-                
-                // Cập nhật thông tin
-                document.getElementById('employeeName').textContent = name;
-                document.getElementById('employeeId').textContent = id;
             }
         }
         
@@ -1228,24 +1385,6 @@
             }
         }
         
-        // Hàm xóa lựa chọn select
-        function clearSelect(selectId) {
-            const select = document.getElementById(selectId);
-            select.value = "";
-            select.dispatchEvent(new Event('change'));
-            
-            if (selectId === 'employeeSelect') {
-                const avatarImg = document.getElementById('employeeAvatarImg');
-                const avatarPlaceholder = document.getElementById('employeeAvatarPlaceholder');
-                
-                avatarImg.style.display = 'none';
-                avatarPlaceholder.style.display = 'flex';
-                
-                document.getElementById('employeeName').textContent = 'Nhân viên';
-                document.getElementById('employeeId').textContent = 'ID';
-            }
-        }
-        
         // Hàm xóa input
         function clearInput(inputId) {
             const input = document.getElementById(inputId);
@@ -1255,7 +1394,7 @@
         }
         
         // Tự động hiển thị nút xóa khi có giá trị
-        document.querySelectorAll('select, input[type="text"]').forEach(element => {
+        document.querySelectorAll('input[type="text"]').forEach(element => {
             element.addEventListener('input', function() {
                 const clearBtn = this.parentElement.querySelector('.clear-btn');
                 if (clearBtn) {
@@ -1270,25 +1409,9 @@
             }
         });
         
-        // Thiết lập giá trị mặc định cho các select
+        // Tính thời gian ban đầu
         document.addEventListener('DOMContentLoaded', function() {
-            // Thiết lập giá trị mặc định từ ảnh chụp
-            document.getElementById('employeeSelect').value = '02170073';
-            document.getElementById('shipName').value = 'Cnc Padma';
-            document.getElementById('workPlace').value = 'Kho hàng 17';
-            document.getElementById('productName').value = 'Bã đậu nành';
-            document.getElementById('jobType').value = 'CNBX';
-            document.getElementById('plan').value = 'PA0338--Tàu <-> Phễu xá thắng <-> Ô tô VC';
-            document.getElementById('vehicle').value = 'IHI-01';
-            
-            // Cập nhật thông tin nhân viên
-            updateEmployeeInfo();
-            
-            // Tính thời gian ban đầu
             calculateTotalTime();
-            
-            // Xử lý thay đổi nhân viên
-            document.getElementById('employeeSelect').addEventListener('change', updateEmployeeInfo);
         });
         
         // Xử lý thêm mới tác nghiệp
@@ -1340,14 +1463,7 @@
                 timerProgressBar: true
             });
 
-            // Reset form sau khi thêm thành công
-            // Bạn có thể tùy chỉnh việc reset các trường theo nhu cầu
-            document.getElementById('employeeSelect').value = '';
-            clearSelect('employeeSelect');
-            
-            
-
-            // Ở đây bạn có thể thêm logic để gửi dữ liệu lên server
+            // Thêm logic để gửi dữ liệu lên server
         });
     </script>
 </body>
